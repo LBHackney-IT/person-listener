@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace PersonListener.Tests.E2ETests.Steps
 {
-    public class DoSomethingUseCaseSteps : BaseSteps
+    public class PersonAddedToTenureUseCaseSteps : BaseSteps
     {
-        public DoSomethingUseCaseSteps()
+        public PersonAddedToTenureUseCaseSteps()
         { }
 
         public async Task WhenTheFunctionIsTriggered(Guid id)
@@ -18,22 +18,25 @@ namespace PersonListener.Tests.E2ETests.Steps
             await TriggerFunction(id).ConfigureAwait(false);
         }
 
-        public async Task ThenTheEntityIsUpdated(DbEntity beforeChange, IDynamoDBContext dbContext)
+        public async Task ThenTheEntityIsUpdated(PersonDbEntity beforeChange, IDynamoDBContext dbContext)
         {
-            var entityInDb = await dbContext.LoadAsync<DbEntity>(beforeChange.Id);
+            var entityInDb = await dbContext.LoadAsync<PersonDbEntity>(beforeChange.Id);
 
+            // TODO - update this...
             entityInDb.Should().BeEquivalentTo(beforeChange,
-                config => config.Excluding(y => y.Description)
+                config => config/*.Excluding(y => y.Description)*/
+                                .Excluding(d => d.LastModified)
                                 .Excluding(z => z.VersionNumber));
-            entityInDb.Description.Should().Be("Updated");
+            //entityInDb.Description.Should().Be("Updated");
+            entityInDb.LastModified.Should().BeCloseTo(DateTime.UtcNow, 100);
             entityInDb.VersionNumber.Should().Be(beforeChange.VersionNumber + 1);
         }
 
         public void ThenAnEntityNotFoundExceptionIsThrown(Guid id)
         {
             _lastException.Should().NotBeNull();
-            _lastException.Should().BeOfType(typeof(EntityNotFoundException<DomainEntity>));
-            (_lastException as EntityNotFoundException<DomainEntity>).Id.Should().Be(id);
+            _lastException.Should().BeOfType(typeof(EntityNotFoundException<Person>));
+            (_lastException as EntityNotFoundException<Person>).Id.Should().Be(id);
         }
     }
 }

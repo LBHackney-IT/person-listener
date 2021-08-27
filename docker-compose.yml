@@ -12,7 +12,6 @@ services:
       - 3000:3000
     environment:
      - ENVIRONMENT=LocalDevelopment
-      # Alter if not using DynamoDb
      - DynamoDb_LocalMode=true
      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
      - AWS_REGION=eu-west-2
@@ -30,7 +29,6 @@ services:
         - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     environment:
       - ENVIRONMENT=LocalDevelopment
-      # Alter if not using DynamoDb
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
       - AWS_REGION=eu-west-2

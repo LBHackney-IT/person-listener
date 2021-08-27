@@ -8,23 +8,23 @@ namespace PersonListener.Tests.E2ETests.Stories
 {
     [Story(
         AsA = "SQS Entity Listener",
-        IWant = "a function to process the DoSomething message",
-        SoThat = "The correct details are set on the entity")]
+        IWant = "a function to process the PersonAddedToTenure message",
+        SoThat = "The correct details are set on the person")]
     [Collection("DynamoDb collection")]
-    public class DoSomethingTests : IDisposable
+    public class PersonAddedToTenureTests : IDisposable
     {
         private readonly DynamoDbFixture _dbFixture;
-        private readonly EntityFixture _entityFixture;
+        private readonly PersonFixture _personFixture;
 
-        private readonly DoSomethingUseCaseSteps _steps;
+        private readonly PersonAddedToTenureUseCaseSteps _steps;
 
-        public DoSomethingTests(DynamoDbFixture dbFixture)
+        public PersonAddedToTenureTests(DynamoDbFixture dbFixture)
         {
             _dbFixture = dbFixture;
 
-            _entityFixture = new EntityFixture(_dbFixture.DynamoDbContext);
+            _personFixture = new PersonFixture(_dbFixture.DynamoDbContext);
 
-            _steps = new DoSomethingUseCaseSteps();
+            _steps = new PersonAddedToTenureUseCaseSteps();
         }
 
         public void Dispose()
@@ -38,27 +38,27 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             if (disposing && !_disposed)
             {
-                _entityFixture.Dispose();
+                _personFixture.Dispose();
 
                 _disposed = true;
             }
         }
 
         [Fact]
-        public void ListenerUpdatesTheEntity()
+        public void ListenerUpdatesThePerson()
         {
             var id = Guid.NewGuid();
-            this.Given(g => _entityFixture.GivenAnEntityAlreadyExists(id))
+            this.Given(g => _personFixture.GivenAPersonAlreadyExists(id))
                 .When(w => _steps.WhenTheFunctionIsTriggered(id))
-                .Then(t => _steps.ThenTheEntityIsUpdated(_entityFixture.DbEntity, _dbFixture.DynamoDbContext))
+                .Then(t => _steps.ThenTheEntityIsUpdated(_personFixture.DbEntity, _dbFixture.DynamoDbContext))
                 .BDDfy();
         }
 
         [Fact]
-        public void EntityNotFound()
+        public void PersonNotFound()
         {
             var id = Guid.NewGuid();
-            this.Given(g => _entityFixture.GivenAnEntityDoesNotExist(id))
+            this.Given(g => _personFixture.GivenAPersonDoesNotExist(id))
                 .When(w => _steps.WhenTheFunctionIsTriggered(id))
                 .Then(t => _steps.ThenAnEntityNotFoundExceptionIsThrown(id))
                 .BDDfy();

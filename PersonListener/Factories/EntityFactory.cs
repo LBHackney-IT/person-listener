@@ -1,30 +1,54 @@
 using PersonListener.Domain;
 using PersonListener.Infrastructure;
+using System.Linq;
 
 namespace PersonListener.Factories
 {
     public static class EntityFactory
     {
-        public static DomainEntity ToDomain(this DbEntity databaseEntity)
+        public static Person ToDomain(this PersonDbEntity databaseEntity)
         {
-            return new DomainEntity
+            return new Person
             {
-                // TODO - Implement factory method fully
                 Id = databaseEntity.Id,
-                Name = databaseEntity.Name,
-                Description = databaseEntity.Description,
-                VersionNumber = databaseEntity.VersionNumber
+                Title = databaseEntity.Title,
+                PreferredTitle = databaseEntity.PreferredTitle,
+                PreferredFirstName = databaseEntity.PreferredFirstName,
+                PreferredMiddleName = databaseEntity.PreferredMiddleName,
+                PreferredSurname = databaseEntity.PreferredSurname,
+                FirstName = databaseEntity.FirstName,
+                MiddleName = databaseEntity.MiddleName,
+                Surname = databaseEntity.Surname,
+                PlaceOfBirth = databaseEntity.PlaceOfBirth,
+                DateOfBirth = databaseEntity.DateOfBirth,
+                Reason = databaseEntity.Reason,
+                PersonTypes = databaseEntity.PersonTypes,
+                Tenures = databaseEntity.Tenures,
+                VersionNumber = databaseEntity.VersionNumber,
+                LastModified = databaseEntity.LastModified
             };
         }
 
-        public static DbEntity ToDatabase(this DomainEntity entity)
+        public static PersonDbEntity ToDatabase(this Person entity)
         {
-            return new DbEntity
+            return new PersonDbEntity
             {
                 Id = entity.Id,
-                Name = entity.Name,
-                Description = entity.Description,
-                VersionNumber = entity.VersionNumber
+                Title = entity.Title,
+                PreferredTitle = entity.PreferredTitle,
+                PreferredFirstName = entity.PreferredFirstName,
+                PreferredMiddleName = entity.PreferredMiddleName,
+                PreferredSurname = entity.PreferredSurname,
+                FirstName = entity.FirstName,
+                MiddleName = entity.MiddleName,
+                Surname = entity.Surname,
+                PlaceOfBirth = entity.PlaceOfBirth,
+                DateOfBirth = entity.DateOfBirth,
+                Reason = entity.Reason,
+                PersonTypes = entity.PersonTypes.ToList(),
+                Tenures = entity.Tenures.ToList(),
+                VersionNumber = entity.VersionNumber,
+                LastModified = entity.LastModified
             };
         }
     }
