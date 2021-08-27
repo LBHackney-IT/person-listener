@@ -33,7 +33,7 @@ terraform {
     bucket  = "terraform-state-housing-staging"
     encrypt = true
     region  = "eu-west-2"
-    key     = "services/base-listener/state"
+    key     = "services/person-listener/state"
   }
 }
 
