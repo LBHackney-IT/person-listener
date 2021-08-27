@@ -30,7 +30,7 @@ namespace PersonListener.Tests.E2ETests.Steps
                                 .Excluding(d => d.LastModified)
                                 .Excluding(z => z.VersionNumber));
             //entityInDb.Description.Should().Be("Updated");
-            entityInDb.LastModified.Should().BeCloseTo(DateTime.UtcNow, 100);
+            entityInDb.LastModified.Should().BeCloseTo(DateTime.UtcNow, 1000);
             entityInDb.VersionNumber.Should().Be(beforeChange.VersionNumber + 1);
         }
 
