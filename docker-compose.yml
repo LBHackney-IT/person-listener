@@ -1,11 +1,11 @@
 version: "3.2"
 
 services:
-  base-listener:
-    image: base-listener
+  person-listener:
+    image: person-listener
     build:
       context: .
-      dockerfile: BaseListener/Dockerfile
+      dockerfile: PersonListener/Dockerfile
       args:
         - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
@@ -21,11 +21,11 @@ services:
     links:
       - dynamodb-database
 
-  base-listener-test:
-    image: base-listener-test
+  person-listener-test:
+    image: person-listener-test
     build:
       context: .
-      dockerfile: BaseListener.Tests/Dockerfile
+      dockerfile: PersonListener.Tests/Dockerfile
       args:
         - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     environment:
