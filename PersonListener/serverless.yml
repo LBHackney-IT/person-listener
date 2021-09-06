@@ -25,9 +25,9 @@ functions:
       TenureApiUrl: ${ssm:/housing-tl/${self:provider.stage}/tenure-api-url}
       TenureApiToken: ${ssm:/housing-tl/${self:provider.stage}/tenure-api-token}
     events:
-      ### Specify the parameter containing the queue arn used to trigget the lambda function here
-      ### This will have been defined in the terraform configuration
-      # - sqs: ${ssm:/sqs-queue/${self:provider.stage}/tenures/arn} 
+      # Specify the parameter containing the queue arn used to trigget the lambda function here
+      # This will have been defined in the terraform configuration
+      - sqs: ${ssm:/sqs-queue/${self:provider.stage}/person/arn} 
       
 resources:
   Resources:
