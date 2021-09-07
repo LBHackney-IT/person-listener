@@ -1,7 +1,6 @@
 using PersonListener.Tests.E2ETests.Fixtures;
 using PersonListener.Tests.E2ETests.Steps;
 using System;
-using System.Linq;
 using TestStack.BDDfy;
 using Xunit;
 
@@ -53,9 +52,11 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var tenureId = Guid.NewGuid();
             this.Given(g => _tenureApiFixture.GivenTheTenureExists(tenureId))
-                .And(h => _personFixture.GivenAPersonAlreadyExists(TenureApiFixture.TenureResponse.HouseholdMembers.First().Id))
-                .When(w => _steps.WhenTheFunctionIsTriggered(tenureId))
-                .Then(t => _steps.ThenThePersonIsUpdated(_personFixture.DbEntity, TenureApiFixture.TenureResponse, _dbFixture.DynamoDbContext))
+                .And(h => _steps.GivenAMessageWithPersonAdded(TenureApiFixture.TenureResponse))
+                .And(h => _personFixture.GivenAPersonAlreadyExists(_steps.NewPersonId))
+                .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
+                .Then(t => _steps.ThenThePersonIsUpdated(_personFixture.DbEntity, TenureApiFixture.TenureResponse,
+                                                         _dbFixture.DynamoDbContext))
                 .BDDfy();
         }
 
@@ -70,13 +71,25 @@ namespace PersonListener.Tests.E2ETests.Stories
         }
 
         [Fact]
+        public void NoPersonAdded()
+        {
+            var tenureId = Guid.NewGuid();
+            this.Given(g => _tenureApiFixture.GivenTheTenureExists(tenureId))
+                .And(h => _steps.GivenAMessageWithNoPersonAdded(TenureApiFixture.TenureResponse))
+                .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
+                .Then(t => _steps.ThenAHouseholdMembersNotChangedExceptionIsThrown(tenureId))
+                .BDDfy();
+        }
+
+        [Fact]
         public void PersonNotFound()
         {
             var tenureId = Guid.NewGuid();
             this.Given(g => _tenureApiFixture.GivenTheTenureExists(tenureId))
-                .And(h => _personFixture.GivenAPersonDoesNotExist(TenureApiFixture.TenureResponse.HouseholdMembers.First().Id))
-                .When(w => _steps.WhenTheFunctionIsTriggered(tenureId))
-                .Then(t => _steps.ThenAPersonNotFoundExceptionIsThrown(TenureApiFixture.TenureResponse.HouseholdMembers.First().Id))
+                .And(h => _steps.GivenAMessageWithPersonAdded(TenureApiFixture.TenureResponse))
+                .And(h => _personFixture.GivenAPersonDoesNotExist(_steps.NewPersonId))
+                .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
+                .Then(t => _steps.ThenAPersonNotFoundExceptionIsThrown(_steps.NewPersonId))
                 .BDDfy();
         }
     }

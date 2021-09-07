@@ -11,15 +11,15 @@ namespace PersonListener.Tests.Infrastructure.Exceptions
         [Fact]
         public void GetTenureExceptionConstructorTest()
         {
-            var personId = Guid.NewGuid();
+            var id = Guid.NewGuid();
             var statusCode = HttpStatusCode.OK;
             var msg = "Some API error message";
 
-            var ex = new GetTenureException(personId, statusCode, msg);
-            ex.PersonId.Should().Be(personId);
+            var ex = new GetTenureException(id, statusCode, msg);
+            ex.TenureId.Should().Be(id);
             ex.StatusCode.Should().Be(statusCode);
             ex.ResponseBody.Should().Be(msg);
-            ex.Message.Should().Be($"Failed to get tenure details for id {personId}. Status code: {statusCode}; Message: {msg}");
+            ex.Message.Should().Be($"Failed to get tenure details for id {id}. Status code: {statusCode}; Message: {msg}");
         }
     }
 }

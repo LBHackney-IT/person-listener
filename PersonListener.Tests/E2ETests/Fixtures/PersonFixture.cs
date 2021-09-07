@@ -1,7 +1,9 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
+using PersonListener.Domain;
 using PersonListener.Infrastructure;
 using System;
+using System.Collections.Generic;
 
 namespace PersonListener.Tests.E2ETests.Fixtures
 {
@@ -44,6 +46,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
                                  .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-35))
                                  .With(x => x.LastModified, DateTime.UtcNow.AddHours(-1))
                                  .With(x => x.VersionNumber, (int?) null)
+                                 .With(x => x.PersonTypes, new List<PersonType>(new[] { PersonType.Tenant }))
                                  .Create();
 
             _dbContext.SaveAsync<PersonDbEntity>(dbEntity).GetAwaiter().GetResult();

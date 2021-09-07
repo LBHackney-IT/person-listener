@@ -105,6 +105,11 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         {
             TenureResponse = _fixture.Build<TenureResponseObject>()
                                       .With(x => x.Id, id)
+                                      .With(x => x.HouseholdMembers,
+                                                 _fixture.Build<HouseholdMembers>()
+                                                         .With(y => y.PersonTenureType, "Occupant")
+                                                         .CreateMany(3)
+                                                         .ToList())
                                       .Create();
             return TenureResponse;
         }
