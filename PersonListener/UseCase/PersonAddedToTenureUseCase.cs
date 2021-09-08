@@ -19,6 +19,8 @@ namespace PersonListener.UseCase
         private readonly IDbPersonGateway _gateway;
         private readonly ITenureInfoApiGateway _tenureInfoApi;
 
+        private const string DateFormat = "yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ";
+
         public PersonAddedToTenureUseCase(IDbPersonGateway gateway, ITenureInfoApiGateway tenureInfoApi)
         {
             _gateway = gateway;
@@ -56,10 +58,10 @@ namespace PersonListener.UseCase
 
             personTenure.AssetFullAddress = tenure.TenuredAsset.FullAddress;
             personTenure.AssetId = tenure.TenuredAsset.Id.ToString();
-            personTenure.EndDate = tenure.EndOfTenureDate?.ToString();
+            personTenure.EndDate = tenure.EndOfTenureDate?.ToString(DateFormat);
             personTenure.PaymentReference = tenure.PaymentReference;
             //personTenure.PropertyReference = ???; // TODO - ignore for now...
-            personTenure.StartDate = tenure.StartOfTenureDate.ToString();
+            personTenure.StartDate = tenure.StartOfTenureDate.ToString(DateFormat);
             personTenure.Type = tenure.TenureType.Description;
             personTenure.Uprn = tenure.TenuredAsset.Uprn;
 
