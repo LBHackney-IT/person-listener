@@ -29,8 +29,8 @@ namespace PersonListener.Tests.E2ETests.Steps
             var oldData = newData.DeepClone();
             eventSns.EventData = new EventData()
             {
-                OldData = new Dictionary<string, object> { { "HouseholdMembers", oldData } },
-                NewData = new Dictionary<string, object> { { "HouseholdMembers", newData } }
+                OldData = new Dictionary<string, object> { { "householdMembers", oldData } },
+                NewData = new Dictionary<string, object> { { "householdMembers", newData } }
             };
             TheMessage = CreateMessage(eventSns);
         }
@@ -42,8 +42,8 @@ namespace PersonListener.Tests.E2ETests.Steps
             var oldData = newData.DeepClone().Take(newData.Count - 1).ToList();
             eventSns.EventData = new EventData()
             {
-                OldData = new Dictionary<string, object> { { "HouseholdMembers", oldData } },
-                NewData = new Dictionary<string, object> { { "HouseholdMembers", newData } }
+                OldData = new Dictionary<string, object> { { "householdMembers", oldData } },
+                NewData = new Dictionary<string, object> { { "householdMembers", newData } }
             };
             TheMessage = CreateMessage(eventSns);
             NewPersonId = newData.Last().Id;

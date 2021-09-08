@@ -74,8 +74,8 @@ namespace PersonListener.Tests.UseCase
             var newData = oldData.DeepClone();
             message.EventData = new EventData()
             {
-                OldData = new Dictionary<string, object> { { "HouseholdMembers", oldData } },
-                NewData = new Dictionary<string, object> { { "HouseholdMembers", newData } }
+                OldData = new Dictionary<string, object> { { "householdMembers", oldData } },
+                NewData = new Dictionary<string, object> { { "householdMembers", newData } }
             };
 
             Guid? personId = null;
@@ -186,7 +186,7 @@ namespace PersonListener.Tests.UseCase
 
             var personId = SetMessageEventData(_tenure, _message, true, newHm);
             var changedHm = added ? newHm
-                : (_message.EventData.NewData["HouseholdMembers"] as List<HouseholdMembers>).First();
+                : (_message.EventData.NewData["householdMembers"] as List<HouseholdMembers>).First();
             var person = CreatePerson(personId);
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync(person);
 
@@ -217,7 +217,7 @@ namespace PersonListener.Tests.UseCase
 
             var personId = SetMessageEventData(_tenure, _message, true, newHm);
             var changedHm = added ? newHm
-                : (_message.EventData.NewData["HouseholdMembers"] as List<HouseholdMembers>).First();
+                : (_message.EventData.NewData["householdMembers"] as List<HouseholdMembers>).First();
             var person = CreatePerson(personId);
             person.Tenures.First().Id = _tenure.Id;
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync(person);
