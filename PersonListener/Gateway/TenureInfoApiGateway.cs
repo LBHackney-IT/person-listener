@@ -28,7 +28,7 @@ namespace PersonListener.Gateway
             _httpClientFactory = httpClientFactory;
             _getTenureApiRoute = configuration.GetValue<string>(TenureApiUrl)?.TrimEnd('/');
             if (string.IsNullOrEmpty(_getTenureApiRoute) || !Uri.IsWellFormedUriString(_getTenureApiRoute, UriKind.Absolute))
-                throw new ArgumentException($"Configuration does not contain a setting value for the key {TenureApiUrl}.");
+                throw new ArgumentException($"Configuration does not contain a valid setting value for the key {TenureApiUrl}.");
 
             _getTenureApiToken = configuration.GetValue<string>(TenureApiToken);
             if (string.IsNullOrEmpty(_getTenureApiToken))
