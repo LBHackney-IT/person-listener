@@ -28,6 +28,8 @@ namespace PersonListener.Tests.UseCase
 
         private readonly Fixture _fixture;
 
+        private const string DateFormat = "yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ";
+
         public PersonAddedToTenureUseCaseTests()
         {
             _fixture = new Fixture();
@@ -239,10 +241,10 @@ namespace PersonListener.Tests.UseCase
 
             personTenure.AssetFullAddress.Should().Be(tenure.TenuredAsset.FullAddress);
             personTenure.AssetId.Should().Be(tenure.TenuredAsset.Id.ToString());
-            personTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToString());
+            personTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToString(DateFormat));
             personTenure.PaymentReference.Should().Be(tenure.PaymentReference);
             // personTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference); // TODO...
-            personTenure.StartDate.Should().Be(tenure.StartOfTenureDate.ToString());
+            personTenure.StartDate.Should().Be(tenure.StartOfTenureDate.ToString(DateFormat));
             personTenure.Type.Should().Be(tenure.TenureType.Description);
             personTenure.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
 
