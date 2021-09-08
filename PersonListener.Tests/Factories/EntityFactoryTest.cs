@@ -1,8 +1,8 @@
 using AutoFixture;
+using FluentAssertions;
 using PersonListener.Domain;
 using PersonListener.Factories;
 using PersonListener.Infrastructure;
-using FluentAssertions;
 using Xunit;
 
 namespace PersonListener.Tests.Factories
@@ -14,19 +14,42 @@ namespace PersonListener.Tests.Factories
         [Fact]
         public void CanMapADatabaseEntityToADomainObject()
         {
-            var databaseEntity = _fixture.Create<DbEntity>();
+            var databaseEntity = _fixture.Build<PersonDbEntity>()
+                                         .Create();
             var entity = databaseEntity.ToDomain();
 
-            databaseEntity.Should().BeEquivalentTo(entity);
+            databaseEntity.Id.Should().Be(entity.Id);
+            databaseEntity.Title.Should().Be(entity.Title);
+            databaseEntity.PreferredFirstName.Should().Be(entity.PreferredFirstName);
+            databaseEntity.PreferredSurname.Should().Be(entity.PreferredSurname);
+            databaseEntity.FirstName.Should().Be(entity.FirstName);
+            databaseEntity.MiddleName.Should().Be(entity.MiddleName);
+            databaseEntity.Surname.Should().Be(entity.Surname);
+            databaseEntity.PlaceOfBirth.Should().Be(entity.PlaceOfBirth);
+            databaseEntity.DateOfBirth.Should().Be(entity.DateOfBirth);
+            databaseEntity.Tenures.Should().BeEquivalentTo(entity.Tenures);
+            databaseEntity.VersionNumber.Should().Be(entity.VersionNumber);
         }
 
         [Fact]
         public void CanMapADomainEntityToADatabaseObject()
         {
-            var entity = _fixture.Create<DomainEntity>();
-            var databaseEntity = entity.ToDatabase();
+            var person = _fixture.Build<Person>()
+                                 .Create();
+            var databaseEntity = person.ToDatabase();
 
-            databaseEntity.Should().BeEquivalentTo(entity);
+            person.Id.Should().Be(databaseEntity.Id);
+            person.Title.Should().Be(person.Title);
+            person.PreferredFirstName.Should().Be(databaseEntity.PreferredFirstName);
+            person.PreferredSurname.Should().Be(databaseEntity.PreferredSurname);
+            person.FirstName.Should().Be(databaseEntity.FirstName);
+            person.MiddleName.Should().Be(databaseEntity.MiddleName);
+            person.Surname.Should().Be(databaseEntity.Surname);
+            person.PlaceOfBirth.Should().Be(databaseEntity.PlaceOfBirth);
+            person.DateOfBirth.Should().Be(databaseEntity.DateOfBirth);
+            person.PersonTypes.Should().BeEquivalentTo(databaseEntity.PersonTypes);
+            person.Tenures.Should().BeEquivalentTo(databaseEntity.Tenures);
+            person.VersionNumber.Should().Be(databaseEntity.VersionNumber);
         }
     }
 }

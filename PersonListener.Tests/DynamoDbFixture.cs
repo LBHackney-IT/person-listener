@@ -10,8 +10,6 @@ using Xunit;
 
 namespace PersonListener.Tests
 {
-    // TODO - Remove if DynamoDb is not required
-
     /// <summary>
     /// Class used to set up a real local DynamoDb instance so that it can be used by Gateway and E2E tests
     /// </summary>
@@ -27,7 +25,7 @@ namespace PersonListener.Tests
         {
             // Define all tables required by the application here.
             // The definition should be exactly the same as that used in real deployed environments
-            new TableDef { Name = "SomeTable", KeyName = "id", KeyType = ScalarAttributeType.S }
+            new TableDef { Name = "Persons", KeyName = "id", KeyType = ScalarAttributeType.S }
         };
 
         public DynamoDbFixture()

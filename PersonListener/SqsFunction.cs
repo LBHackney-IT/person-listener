@@ -1,14 +1,14 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
+using Hackney.Core.DynamoDb;
+using Hackney.Core.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PersonListener.Boundary;
 using PersonListener.Gateway;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.UseCase;
 using PersonListener.UseCase.Interfaces;
-using Hackney.Core.DynamoDb;
-using Hackney.Core.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -42,9 +42,10 @@ namespace PersonListener
             services.ConfigureDynamoDB();
 
             services.AddHttpClient();
-            services.AddScoped<IDoSomethingUseCase, DoSomethingUseCase>();
+            services.AddScoped<IPersonAddedToTenureUseCase, PersonAddedToTenureUseCase>();
 
-            services.AddScoped<IDbEntityGateway, DynamoDbEntityGateway>();
+            services.AddScoped<IDbPersonGateway, DynamoDbPersonGateway>();
+            services.AddScoped<ITenureInfoApiGateway, TenureInfoApiGateway>();
 
             base.ConfigureServices(services);
         }
@@ -86,12 +87,13 @@ namespace PersonListener
                     IMessageProcessing processor = null;
                     switch (entityEvent.EventType)
                     {
-                        case EventTypes.DoSomethingEvent:
+                        case EventTypes.PersonAddedToTenureEvent:
                             {
-                                processor = ServiceProvider.GetService<IDoSomethingUseCase>();
+                                processor = ServiceProvider.GetService<IPersonAddedToTenureUseCase>();
                                 break;
                             }
-                        // TODO - Implement other message types here...
+                        case EventTypes.TenureCreatedEvent: // We can ignore this one and just let it go as we don't care about it
+                            return;
                         default:
                             throw new ArgumentException($"Unknown event type: {entityEvent.EventType} on message id: {message.MessageId}");
                     }
