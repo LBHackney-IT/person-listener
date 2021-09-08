@@ -113,7 +113,7 @@ namespace PersonListener.Tests.Gateway
                                                            (e) => e.Excluding(y => y.VersionNumber)
                                                                    .Excluding(y => y.LastModified));
             updatedInDB.VersionNumber.Should().Be(person.VersionNumber + 1);
-            updatedInDB.LastModified.Should().BeCloseTo(DateTime.UtcNow, 100);
+            updatedInDB.LastModified.Should().BeCloseTo(DateTime.UtcNow, 1000);
 
             _logger.VerifyExact(LogLevel.Debug, $"Calling IDynamoDBContext.SaveAsync for id {person.Id}", Times.Once());
         }
