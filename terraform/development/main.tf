@@ -9,16 +9,16 @@
 # 7) ENSURE THIS FILE IS PLACED WITHIN A 'terraform' FOLDER LOCATED AT THE ROOT PROJECT DIRECTORY
 
 terraform {
-    required_providers {
-        aws = {
-            source  = "hashicorp/aws"
-            version = "~> 3.0"
-        }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
     }
+  }
 }
 
 provider "aws" {
-    region = "eu-west-2"
+  region = "eu-west-2"
 }
 
 data "aws_caller_identity" "current" {}
@@ -26,7 +26,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 locals {
-    parameter_store = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter"
+  parameter_store = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter"
 }
 
 terraform {
@@ -48,10 +48,10 @@ data "aws_ssm_parameter" "tenure_sns_topic_arn" {
 # This is the definition of the dead letter queue used whem message processsing fails for a given message
 
 resource "aws_sqs_queue" "person_dead_letter_queue" {
-  name                        = "persondeadletterqueue.fifo"
-  fifo_queue                  = true
-  content_based_deduplication = true
-  kms_master_key_id           = "alias/housing-development-cmk"
+  name                              = "persondeadletterqueue.fifo"
+  fifo_queue                        = true
+  content_based_deduplication       = true
+  kms_master_key_id                 = "alias/housing-development-cmk"
   kms_data_key_reuse_period_seconds = 300
 }
 
@@ -59,14 +59,14 @@ resource "aws_sqs_queue" "person_dead_letter_queue" {
 # This is what the listener lambda function will get triggered by.
 
 resource "aws_sqs_queue" "person_queue" {
-  name                        = "personqueue.fifo"
-  fifo_queue                  = true
-  content_based_deduplication = true
-  kms_master_key_id           = "alias/housing-development-cmk"           # This is a custom key
+  name                              = "personqueue.fifo"
+  fifo_queue                        = true
+  content_based_deduplication       = true
+  kms_master_key_id                 = "alias/housing-development-cmk" # This is a custom key
   kms_data_key_reuse_period_seconds = 300
-  redrive_policy              = jsonencode({
+  redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.person_dead_letter_queue.arn,
-    maxReceiveCount     = 3                                               # Messages that fail processing are retried twice before being moved to the dead letter queue
+    maxReceiveCount     = 3 # Messages that fail processing are retried twice before being moved to the dead letter queue
   })
 }
 
@@ -74,7 +74,7 @@ resource "aws_sqs_queue" "person_queue" {
 
 resource "aws_sqs_queue_policy" "person_queue_policy" {
   queue_url = aws_sqs_queue.person_queue.id
-  policy = <<POLICY
+  policy    = <<POLICY
   {
       "Version": "2012-10-17",
       "Id": "sqspolicy",
@@ -99,9 +99,9 @@ resource "aws_sqs_queue_policy" "person_queue_policy" {
 # This is the subscription definition that tells the topic which queue to use
 
 resource "aws_sns_topic_subscription" "person_queue_subscribe_to_tenure_sns" {
-  topic_arn = data.aws_ssm_parameter.tenure_sns_topic_arn.value
-  protocol  = "sqs"
-  endpoint  = aws_sqs_queue.person_queue.arn
+  topic_arn            = data.aws_ssm_parameter.tenure_sns_topic_arn.value
+  protocol             = "sqs"
+  endpoint             = aws_sqs_queue.person_queue.arn
   raw_message_delivery = true
 }
 
@@ -113,3 +113,12 @@ resource "aws_ssm_parameter" "person_sqs_queue_arn" {
   type  = "String"
   value = aws_sqs_queue.person_queue.arn
 }
+
+module "person_listener_cw_dashboard" {
+  source                     = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/dashboards/listener-dashboard"
+  environment_name           = var.environment_name
+  listener_name              = "person-listener"
+  sqs_queue_name             = aws_sqs_queue.person_queue.name
+  sqs_dead_letter_queue_name = aws_sqs_queue.person_dead_letter_queue.name
+}
+
