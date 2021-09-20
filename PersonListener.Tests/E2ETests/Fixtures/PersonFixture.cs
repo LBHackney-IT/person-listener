@@ -1,6 +1,6 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Infrastructure;
 using System;
 using System.Collections.Generic;

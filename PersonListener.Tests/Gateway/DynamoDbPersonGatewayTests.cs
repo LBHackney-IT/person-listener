@@ -3,7 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Factories;
 using PersonListener.Gateway;
 using PersonListener.Infrastructure;

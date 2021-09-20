@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using System;
 using System.Linq;
 using Xunit;

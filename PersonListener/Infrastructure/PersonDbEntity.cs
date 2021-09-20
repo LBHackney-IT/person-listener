@@ -1,6 +1,6 @@
 using Amazon.DynamoDBv2.DataModel;
 using Hackney.Core.DynamoDb.Converters;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using System;
 using System.Collections.Generic;
 

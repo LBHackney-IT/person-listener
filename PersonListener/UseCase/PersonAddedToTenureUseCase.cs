@@ -1,6 +1,6 @@
 using Hackney.Core.Logging;
 using PersonListener.Boundary;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure;
@@ -79,7 +79,7 @@ namespace PersonListener.UseCase
             await _gateway.SavePersonAsync(person).ConfigureAwait(false);
         }
 
-        private static HouseholdMembers GetAddedOrUpdatedHouseholdMember(EventData eventData)
+        private static HouseholdMembers GetAddedOrUpdatedHouseholdMember(PersonListener.Boundary.EventData eventData)
         {
             var oldHms = GetHouseholdMembersFromEventData(eventData.OldData);
             var newHms = GetHouseholdMembersFromEventData(eventData.NewData);

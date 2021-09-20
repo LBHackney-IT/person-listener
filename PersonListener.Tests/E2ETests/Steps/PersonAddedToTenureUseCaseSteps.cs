@@ -3,7 +3,7 @@ using Amazon.Lambda.SQSEvents;
 using FluentAssertions;
 using Force.DeepCloner;
 using PersonListener.Boundary;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Domain.TenureInformation;
 using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
@@ -29,7 +29,7 @@ namespace PersonListener.Tests.E2ETests.Steps
             var eventSns = CreateEvent(tenure.Id);
             var newData = tenure.HouseholdMembers;
             var oldData = newData.DeepClone();
-            eventSns.EventData = new EventData()
+            eventSns.EventData = new PersonListener.Boundary.EventData()
             {
                 OldData = new Dictionary<string, object> { { "householdMembers", oldData } },
                 NewData = new Dictionary<string, object> { { "householdMembers", newData } }
@@ -42,7 +42,7 @@ namespace PersonListener.Tests.E2ETests.Steps
             var eventSns = CreateEvent(tenure.Id);
             var newData = tenure.HouseholdMembers;
             var oldData = newData.DeepClone().Take(newData.Count - 1).ToList();
-            eventSns.EventData = new EventData()
+            eventSns.EventData = new PersonListener.Boundary.EventData()
             {
                 OldData = new Dictionary<string, object> { { "householdMembers", oldData } },
                 NewData = new Dictionary<string, object> { { "householdMembers", newData } }

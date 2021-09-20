@@ -1,4 +1,4 @@
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Infrastructure;
 using System.Linq;
 

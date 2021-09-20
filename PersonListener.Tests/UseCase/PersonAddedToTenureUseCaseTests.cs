@@ -3,7 +3,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
 using PersonListener.Boundary;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure.Exceptions;
@@ -74,7 +74,7 @@ namespace PersonListener.Tests.UseCase
         {
             var oldData = tenure.HouseholdMembers;
             var newData = oldData.DeepClone();
-            message.EventData = new EventData()
+            message.EventData = new PersonListener.Boundary.EventData()
             {
                 OldData = new Dictionary<string, object> { { "householdMembers", oldData } },
                 NewData = new Dictionary<string, object> { { "householdMembers", newData } }

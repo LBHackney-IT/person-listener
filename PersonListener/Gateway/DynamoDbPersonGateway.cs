@@ -1,7 +1,7 @@
 using Amazon.DynamoDBv2.DataModel;
 using Hackney.Core.Logging;
 using Microsoft.Extensions.Logging;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Factories;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure;

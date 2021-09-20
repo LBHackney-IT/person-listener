@@ -1,6 +1,6 @@
 using AutoFixture;
 using FluentAssertions;
-using PersonListener.Domain;
+using Hackney.Shared.Person;
 using PersonListener.Factories;
 using PersonListener.Infrastructure;
 using Xunit;
