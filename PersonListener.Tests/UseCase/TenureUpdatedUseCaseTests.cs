@@ -141,7 +141,7 @@ namespace PersonListener.Tests.UseCase
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
             func.Should().Throw<EntityNotFoundException<Person>>();
 
-            _mockGateway.Verify(x => x.GetPersonByIdAsync(It.IsAny<Guid>()), Times.Once());
+            _mockGateway.Verify(x => x.GetPersonByIdAsync(It.IsAny<Guid>()), Times.Exactly(3));
             _mockGateway.Verify(x => x.SavePersonAsync(It.IsAny<Person>()), Times.Never());
         }
 

@@ -40,30 +40,38 @@ namespace PersonListener.UseCase
                 return;
 
             // #3 - For each Household member update the tenure info on the person record
+            var tasks = new List<Task>();
             var updatedPersons = new List<Person>();
             foreach (var hm in tenure.HouseholdMembers)
-            {
-                var thisPerson = await _gateway.GetPersonByIdAsync(hm.Id).ConfigureAwait(false);
-                if (thisPerson is null) throw new EntityNotFoundException<Person>(hm.Id);
-
-                var personTenure = thisPerson.Tenures.FirstOrDefault(x => x.Id == tenure.Id);
-                if (personTenure is null) throw new PersonMissingTenureException(thisPerson.Id, tenure.Id);
-
-                personTenure.AssetFullAddress = tenure.TenuredAsset.FullAddress;
-                personTenure.AssetId = tenure.TenuredAsset.Id.ToString();
-                personTenure.EndDate = tenure.EndOfTenureDate?.ToFormattedDateTime();
-                personTenure.PaymentReference = tenure.PaymentReference;
-                // personTenure.PropertyReference = tenure.PropertyReference; // TODO - property not yet available
-                personTenure.StartDate = tenure.StartOfTenureDate.ToFormattedDateTime();
-                personTenure.Type = tenure.TenureType.Description;
-                personTenure.Uprn = tenure.TenuredAsset.Uprn;
-
-                updatedPersons.Add(thisPerson);
-            }
+                tasks.Add(UpdatePersonRecord(tenure, hm, updatedPersons));
+            Task.WaitAll(tasks.ToArray());
 
             // #4 - Save all updated person records
+            tasks.Clear();
             foreach (var p in updatedPersons)
-                await _gateway.SavePersonAsync(p).ConfigureAwait(false);
+                tasks.Add(_gateway.SavePersonAsync(p));
+
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        private async Task UpdatePersonRecord(TenureResponseObject tenure, HouseholdMembers hm, List<Person> updatedRecords)
+        {
+            var thisPerson = await _gateway.GetPersonByIdAsync(hm.Id).ConfigureAwait(false);
+            if (thisPerson is null) throw new EntityNotFoundException<Person>(hm.Id);
+
+            var personTenure = thisPerson.Tenures.FirstOrDefault(x => x.Id == tenure.Id);
+            if (personTenure is null) throw new PersonMissingTenureException(thisPerson.Id, tenure.Id);
+
+            personTenure.AssetFullAddress = tenure.TenuredAsset.FullAddress;
+            personTenure.AssetId = tenure.TenuredAsset.Id.ToString();
+            personTenure.EndDate = tenure.EndOfTenureDate?.ToFormattedDateTime();
+            personTenure.PaymentReference = tenure.PaymentReference;
+            // personTenure.PropertyReference = tenure.PropertyReference; // TODO - property not yet available
+            personTenure.StartDate = tenure.StartOfTenureDate.ToFormattedDateTime();
+            personTenure.Type = tenure.TenureType.Description;
+            personTenure.Uprn = tenure.TenuredAsset.Uprn;
+
+            updatedRecords.Add(thisPerson);
         }
     }
 }

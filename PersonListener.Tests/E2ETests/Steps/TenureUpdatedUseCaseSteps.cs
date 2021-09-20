@@ -52,6 +52,15 @@ namespace PersonListener.Tests.E2ETests.Steps
             (_lastException as EntityNotFoundException<Person>).Id.Should().Be(id);
         }
 
+        public void ThenAnAggregatedPersonNotFoundExceptionIsThrown(IEnumerable<Guid> ids)
+        {
+            _lastException.Should().NotBeNull();
+            _lastException.Should().BeOfType(typeof(AggregateException));
+            (_lastException as AggregateException).InnerExceptions.Should().AllBeOfType<EntityNotFoundException<Person>>();
+            (_lastException as AggregateException).InnerExceptions.Select(x => (x as EntityNotFoundException<Person>).Id)
+                                                                  .Should().BeEquivalentTo(ids);
+        }
+
         public async Task ThenThePersonsAreUpdated(List<PersonDbEntity> persons, TenureResponseObject tenure, IDynamoDBContext dbContext)
         {
             foreach (var hm in tenure.HouseholdMembers)

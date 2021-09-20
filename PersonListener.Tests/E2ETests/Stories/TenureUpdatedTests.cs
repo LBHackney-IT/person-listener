@@ -89,8 +89,8 @@ namespace PersonListener.Tests.E2ETests.Stories
                 .And(h => _personFixture.GivenAPersonDoesNotExist(
                     TenureApiFixture.TenureResponse.HouseholdMembers.First().Id))
                 .When(w => _steps.WhenTheFunctionIsTriggered(tenureId))
-                .Then(t => _steps.ThenAPersonNotFoundExceptionIsThrown(
-                    TenureApiFixture.TenureResponse.HouseholdMembers.First().Id))
+                .Then(t => _steps.ThenAnAggregatedPersonNotFoundExceptionIsThrown(
+                    TenureApiFixture.TenureResponse.HouseholdMembers.Select(x => x.Id)))
                 .BDDfy();
         }
     }
