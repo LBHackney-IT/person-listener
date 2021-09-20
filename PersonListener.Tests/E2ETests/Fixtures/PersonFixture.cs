@@ -1,9 +1,11 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using PersonListener.Domain;
+using PersonListener.Domain.TenureInformation;
 using PersonListener.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PersonListener.Tests.E2ETests.Fixtures
 {
@@ -15,6 +17,8 @@ namespace PersonListener.Tests.E2ETests.Fixtures
 
         public PersonDbEntity DbEntity { get; private set; }
         public Guid DbEntityId { get; private set; }
+
+        public List<PersonDbEntity> Persons { get; private set; } = new List<PersonDbEntity>();
 
         public PersonFixture(IDynamoDBContext dbContext)
         {
@@ -52,6 +56,30 @@ namespace PersonListener.Tests.E2ETests.Fixtures
             _dbContext.SaveAsync<PersonDbEntity>(dbEntity).GetAwaiter().GetResult();
             dbEntity.VersionNumber = 0;
             return dbEntity;
+        }
+
+        public void GivenThePersonsAlreadyExist(TenureResponseObject tenure)
+        {
+            foreach (var hm in tenure.HouseholdMembers)
+            {
+                var personTenures = _fixture.CreateMany<Tenure>(2).ToList();
+                personTenures.Add(_fixture.Build<Tenure>()
+                                          .With(x => x.Id, tenure.Id)
+                                          .Create());
+                var dbPerson = _fixture.Build<PersonDbEntity>()
+                                       .With(x => x.Id, hm.Id)
+                                       .With(x => x.DateOfBirth, hm.DateOfBirth)
+                                       .With(x => x.LastModified, DateTime.UtcNow.AddHours(-1))
+                                       .With(x => x.Tenures, personTenures)
+                                       .With(x => x.Id, hm.Id)
+                                       .With(x => x.VersionNumber, (int?) null)
+                                       .Create();
+
+                _dbContext.SaveAsync<PersonDbEntity>(dbPerson).GetAwaiter().GetResult();
+                dbPerson.VersionNumber = 0;
+
+                Persons.Add(dbPerson);
+            }
         }
 
         public void GivenAPersonAlreadyExists(Guid id)

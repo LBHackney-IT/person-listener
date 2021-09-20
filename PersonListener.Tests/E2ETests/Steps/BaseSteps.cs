@@ -18,21 +18,22 @@ namespace PersonListener.Tests.E2ETests.Steps
         protected readonly JsonSerializerOptions _jsonOptions = JsonOptions.CreateJsonOptions();
         protected readonly Fixture _fixture = new Fixture();
         protected Exception _lastException;
+        protected string _eventType;
 
         public BaseSteps()
         { }
 
-        protected EntityEventSns CreateEvent(Guid personId, string eventType = EventTypes.PersonAddedToTenureEvent)
+        protected EntityEventSns CreateEvent(Guid personId, string eventType)
         {
             return _fixture.Build<EntityEventSns>()
                            .With(x => x.EntityId, personId)
-                           .With(x => x.EventType, eventType)
+                           .With(x => x.EventType, _eventType)
                            .Create();
         }
 
-        protected SQSEvent.SQSMessage CreateMessage(Guid personId, string eventType = EventTypes.PersonAddedToTenureEvent)
+        protected SQSEvent.SQSMessage CreateMessage(Guid personId)
         {
-            return CreateMessage(CreateEvent(personId, eventType));
+            return CreateMessage(CreateEvent(personId, _eventType));
         }
 
         protected SQSEvent.SQSMessage CreateMessage(EntityEventSns eventSns)
