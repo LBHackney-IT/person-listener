@@ -6,6 +6,7 @@ using PersonListener.Boundary;
 using PersonListener.Domain;
 using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
+using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
 using PersonListener.UseCase;
 using System;
@@ -27,8 +28,6 @@ namespace PersonListener.Tests.UseCase
         private readonly TenureResponseObject _tenure;
 
         private readonly Fixture _fixture;
-
-        private const string DateFormat = "yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ";
 
         public PersonAddedToTenureUseCaseTests()
         {
@@ -133,7 +132,7 @@ namespace PersonListener.Tests.UseCase
 
             _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
                                        .ReturnsAsync(_tenure);
-            Func<Task> func = async () => await _sut.ProcessMessageAsync(null).ConfigureAwait(false);
+            Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
             func.Should().ThrowAsync<HouseholdMembersNotChangedException>();
         }
 
@@ -147,7 +146,7 @@ namespace PersonListener.Tests.UseCase
             _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
                                        .ReturnsAsync(_tenure);
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync((Person) null);
-            Func<Task> func = async () => await _sut.ProcessMessageAsync(null).ConfigureAwait(false);
+            Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
             func.Should().ThrowAsync<EntityNotFoundException<Person>>();
         }
 
@@ -241,10 +240,10 @@ namespace PersonListener.Tests.UseCase
 
             personTenure.AssetFullAddress.Should().Be(tenure.TenuredAsset.FullAddress);
             personTenure.AssetId.Should().Be(tenure.TenuredAsset.Id.ToString());
-            personTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToString(DateFormat));
+            personTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             personTenure.PaymentReference.Should().Be(tenure.PaymentReference);
             // personTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference); // TODO...
-            personTenure.StartDate.Should().Be(tenure.StartOfTenureDate.ToString(DateFormat));
+            personTenure.StartDate.Should().Be(tenure.StartOfTenureDate.ToFormattedDateTime());
             personTenure.Type.Should().Be(tenure.TenureType.Description);
             personTenure.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
 

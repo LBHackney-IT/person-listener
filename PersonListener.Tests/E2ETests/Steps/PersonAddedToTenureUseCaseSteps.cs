@@ -19,14 +19,14 @@ namespace PersonListener.Tests.E2ETests.Steps
         public SQSEvent.SQSMessage TheMessage { get; private set; }
         public Guid NewPersonId { get; private set; }
 
-        private const string DateFormat = "yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ";
-
         public PersonAddedToTenureUseCaseSteps()
-        { }
+        {
+            _eventType = EventTypes.PersonAddedToTenureEvent;
+        }
 
         public void GivenAMessageWithNoPersonAdded(TenureResponseObject tenure)
         {
-            var eventSns = CreateEvent(tenure.Id);
+            var eventSns = CreateEvent(tenure.Id, _eventType);
             var newData = tenure.HouseholdMembers;
             var oldData = newData.DeepClone();
             eventSns.EventData = new EventData()
@@ -39,7 +39,7 @@ namespace PersonListener.Tests.E2ETests.Steps
 
         public void GivenAMessageWithPersonAdded(TenureResponseObject tenure)
         {
-            var eventSns = CreateEvent(tenure.Id);
+            var eventSns = CreateEvent(tenure.Id, _eventType);
             var newData = tenure.HouseholdMembers;
             var oldData = newData.DeepClone().Take(newData.Count - 1).ToList();
             eventSns.EventData = new EventData()
@@ -76,10 +76,10 @@ namespace PersonListener.Tests.E2ETests.Steps
             newTenure.Should().NotBeNull();
             newTenure.AssetFullAddress.Should().Be(tenure.TenuredAsset.FullAddress);
             newTenure.AssetId.Should().Be(tenure.TenuredAsset.Id.ToString());
-            newTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToString(DateFormat));
+            newTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             newTenure.PaymentReference.Should().Be(tenure.PaymentReference);
             // newTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference); // TODO...
-            newTenure.StartDate.Should().Be(tenure.StartOfTenureDate.ToString(DateFormat));
+            newTenure.StartDate.Should().Be(tenure.StartOfTenureDate.ToFormattedDateTime());
             newTenure.Type.Should().Be(tenure.TenureType.Description);
             newTenure.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
 
