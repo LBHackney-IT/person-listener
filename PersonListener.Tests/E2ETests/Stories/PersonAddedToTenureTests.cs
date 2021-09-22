@@ -55,6 +55,7 @@ namespace PersonListener.Tests.E2ETests.Stories
                 .And(h => _steps.GivenAMessageWithPersonAdded(TenureApiFixture.TenureResponse))
                 .And(h => _personFixture.GivenAPersonAlreadyExists(_steps.NewPersonId))
                 .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
+                .Then(t => _steps.ThenTheCorrleationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationId))
                 .Then(t => _steps.ThenThePersonIsUpdated(_personFixture.DbEntity, TenureApiFixture.TenureResponse,
                                                          _dbFixture.DynamoDbContext))
                 .BDDfy();
@@ -67,6 +68,7 @@ namespace PersonListener.Tests.E2ETests.Stories
             this.Given(g => _tenureApiFixture.GivenTheTenureDoesNotExist(tenureId))
                 .When(w => _steps.WhenTheFunctionIsTriggered(tenureId))
                 .Then(t => _steps.ThenATenureNotFoundExceptionIsThrown(tenureId))
+                .Then(t => _steps.ThenTheCorrleationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationId))
                 .BDDfy();
         }
 
@@ -77,6 +79,7 @@ namespace PersonListener.Tests.E2ETests.Stories
             this.Given(g => _tenureApiFixture.GivenTheTenureExists(tenureId))
                 .And(h => _steps.GivenAMessageWithNoPersonAdded(TenureApiFixture.TenureResponse))
                 .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
+                .Then(t => _steps.ThenTheCorrleationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationId))
                 .Then(t => _steps.ThenAHouseholdMembersNotChangedExceptionIsThrown(tenureId))
                 .BDDfy();
         }
@@ -89,6 +92,7 @@ namespace PersonListener.Tests.E2ETests.Stories
                 .And(h => _steps.GivenAMessageWithPersonAdded(TenureApiFixture.TenureResponse))
                 .And(h => _personFixture.GivenAPersonDoesNotExist(_steps.NewPersonId))
                 .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
+                .Then(t => _steps.ThenTheCorrleationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationId))
                 .Then(t => _steps.ThenAPersonNotFoundExceptionIsThrown(_steps.NewPersonId))
                 .BDDfy();
         }

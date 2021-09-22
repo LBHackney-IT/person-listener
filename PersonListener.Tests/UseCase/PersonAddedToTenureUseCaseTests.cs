@@ -28,6 +28,7 @@ namespace PersonListener.Tests.UseCase
         private readonly TenureResponseObject _tenure;
 
         private readonly Fixture _fixture;
+        private static readonly Guid _correlationId = Guid.NewGuid();
 
         public PersonAddedToTenureUseCaseTests()
         {
@@ -66,6 +67,7 @@ namespace PersonListener.Tests.UseCase
             return _fixture.Build<EntityEventSns>()
                            .With(x => x.EventType, eventType)
                            .With(x => x.EntityId, tenureId)
+                           .With(x => x.CorrelationId, _correlationId)
                            .Create();
         }
 
@@ -108,7 +110,7 @@ namespace PersonListener.Tests.UseCase
         public void ProcessMessageAsyncTestGetTenureExceptionThrown()
         {
             var exMsg = "This is an error";
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ThrowsAsync(new Exception(exMsg));
 
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
@@ -118,7 +120,7 @@ namespace PersonListener.Tests.UseCase
         [Fact]
         public void ProcessMessageAsyncTestGetTenureReturnsNullThrows()
         {
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync((TenureResponseObject) null);
 
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
@@ -130,7 +132,7 @@ namespace PersonListener.Tests.UseCase
         {
             SetMessageEventData(_tenure, _message, false);
 
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
             func.Should().ThrowAsync<HouseholdMembersNotChangedException>();
@@ -143,7 +145,7 @@ namespace PersonListener.Tests.UseCase
             var person = CreatePerson(personId);
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync(person);
 
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync((Person) null);
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
@@ -157,7 +159,7 @@ namespace PersonListener.Tests.UseCase
             var person = CreatePerson(personId);
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync(person);
 
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             var exMsg = "This is the last error";
             _mockGateway.Setup(x => x.SavePersonAsync(It.IsAny<Person>()))
@@ -191,7 +193,7 @@ namespace PersonListener.Tests.UseCase
             var person = CreatePerson(personId);
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync(person);
 
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
 
             await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
@@ -223,7 +225,7 @@ namespace PersonListener.Tests.UseCase
             person.Tenures.First().Id = _tenure.Id;
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync(person);
 
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
 
             await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);

@@ -31,7 +31,7 @@ namespace PersonListener.UseCase
             if (message is null) throw new ArgumentNullException(nameof(message));
 
             // #1 - Get the tenure
-            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(message.EntityId)
+            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(message.EntityId, message.CorrelationId)
                                              .ConfigureAwait(false);
             if (tenure is null) throw new EntityNotFoundException<TenureResponseObject>(message.EntityId);
 
