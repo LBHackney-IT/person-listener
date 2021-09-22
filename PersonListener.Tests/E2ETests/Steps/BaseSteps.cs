@@ -2,9 +2,10 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
 using AutoFixture;
+using FluentAssertions;
+using Moq;
 using PersonListener.Boundary;
 using PersonListener.Infrastructure;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -19,6 +20,7 @@ namespace PersonListener.Tests.E2ETests.Steps
         protected readonly Fixture _fixture = new Fixture();
         protected Exception _lastException;
         protected string _eventType;
+        protected readonly Guid _correlationId = Guid.NewGuid();
 
         public BaseSteps()
         { }
@@ -28,6 +30,7 @@ namespace PersonListener.Tests.E2ETests.Steps
             return _fixture.Build<EntityEventSns>()
                            .With(x => x.EntityId, personId)
                            .With(x => x.EventType, _eventType)
+                           .With(x => x.CorrelationId, _correlationId)
                            .Create();
         }
 
@@ -69,6 +72,11 @@ namespace PersonListener.Tests.E2ETests.Steps
             };
 
             _lastException = await Record.ExceptionAsync(func);
+        }
+
+        public void ThenTheCorrleationIdWasUsedInTheApiCall(string receivedCorrelationId)
+        {
+            receivedCorrelationId.Should().Be(_correlationId.ToString());
         }
     }
 }
