@@ -96,6 +96,11 @@ namespace PersonListener.Tests.E2ETests.Fixtures
             });
         }
 
+        public void GivenTheTenureHasNoHouseholdMembers(TenureResponseObject tenureResponse)
+        {
+            tenureResponse.HouseholdMembers.Clear();
+        }
+
         public void GivenTheTenureDoesNotExist(Guid id)
         {
             // Nothing to do here

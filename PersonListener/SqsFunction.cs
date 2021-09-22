@@ -5,6 +5,7 @@ using Hackney.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PersonListener.Boundary;
+using PersonListener.Factories;
 using PersonListener.Gateway;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.UseCase;
@@ -43,6 +44,7 @@ namespace PersonListener
 
             services.AddHttpClient();
             services.AddScoped<IPersonAddedToTenureUseCase, PersonAddedToTenureUseCase>();
+            services.AddScoped<ITenureUpdatedUseCase, TenureUpdatedUseCase>();
 
             services.AddScoped<IDbPersonGateway, DynamoDbPersonGateway>();
             services.AddScoped<ITenureInfoApiGateway, TenureInfoApiGateway>();
@@ -84,21 +86,12 @@ namespace PersonListener
             {
                 try
                 {
-                    IMessageProcessing processor = null;
-                    switch (entityEvent.EventType)
-                    {
-                        case EventTypes.PersonAddedToTenureEvent:
-                            {
-                                processor = ServiceProvider.GetService<IPersonAddedToTenureUseCase>();
-                                break;
-                            }
-                        case EventTypes.TenureCreatedEvent: // We can ignore this one and just let it go as we don't care about it
-                            return;
-                        default:
-                            throw new ArgumentException($"Unknown event type: {entityEvent.EventType} on message id: {message.MessageId}");
-                    }
-
-                    await processor.ProcessMessageAsync(entityEvent).ConfigureAwait(false);
+                    IMessageProcessing processor = entityEvent.CreateUseCaseForMessage(ServiceProvider);
+                    if (processor != null)
+                        await processor.ProcessMessageAsync(entityEvent).ConfigureAwait(false);
+                    else
+                        Logger.LogInformation($"No processors available for message so it will be ignored. " +
+                            $"Message id: {message.MessageId}; type: {entityEvent.EventType}; version: {entityEvent.Version}; entity id: {entityEvent.EntityId}");
                 }
                 catch (Exception ex)
                 {

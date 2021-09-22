@@ -11,6 +11,7 @@ namespace PersonListener.Domain.TenureInformation
         public DateTime StartOfTenureDate { get; set; }
         public DateTime? EndOfTenureDate { get; set; }
         public TenureType TenureType { get; set; }
+        public bool IsActive { get; set; }
         public List<HouseholdMembers> HouseholdMembers { get; set; }
     }
 }

@@ -4,6 +4,7 @@ namespace PersonListener
     {
         // Define the event types this service will be interested in here.
         public const string TenureCreatedEvent = "TenureCreatedEvent";
+        public const string TenureUpdatedEvent = "TenureUpdatedEvent";
         public const string PersonAddedToTenureEvent = "PersonAddedToTenureEvent";
     }
 }
