@@ -66,6 +66,7 @@ namespace PersonListener.Tests.Factories
 
         [Theory]
         [InlineData(EventTypes.TenureCreatedEvent)]
+        [InlineData(EventTypes.PersonRemovedFromTenureEvent)]
         public void CreateUseCaseForMessageTestIgnoredEvents(string eventType)
         {
             _event = ConstructEvent(eventType);

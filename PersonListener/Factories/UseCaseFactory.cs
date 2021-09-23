@@ -27,6 +27,7 @@ namespace PersonListener.Factories
                     }
                 // We can ignore these and just let them go as we don't care about them
                 case EventTypes.TenureCreatedEvent:
+                case EventTypes.PersonRemovedFromTenureEvent:
                     break;
 
                 default:
