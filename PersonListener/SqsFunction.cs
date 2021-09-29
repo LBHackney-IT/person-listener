@@ -44,6 +44,7 @@ namespace PersonListener
 
             services.AddHttpClient();
             services.AddScoped<IPersonAddedToTenureUseCase, PersonAddedToTenureUseCase>();
+            services.AddScoped<IPersonRemovedFromTenureUseCase, PersonRemovedFromTenureUseCase>();
             services.AddScoped<ITenureUpdatedUseCase, TenureUpdatedUseCase>();
 
             services.AddScoped<IDbPersonGateway, DynamoDbPersonGateway>();

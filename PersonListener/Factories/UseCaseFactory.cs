@@ -25,9 +25,13 @@ namespace PersonListener.Factories
                         processor = serviceProvider.GetService<ITenureUpdatedUseCase>();
                         break;
                     }
+                case EventTypes.PersonRemovedFromTenureEvent:
+                    {
+                        processor = serviceProvider.GetService<IPersonRemovedFromTenureUseCase>();
+                        break;
+                    }
                 // We can ignore these and just let them go as we don't care about them
                 case EventTypes.TenureCreatedEvent:
-                case EventTypes.PersonRemovedFromTenureEvent:
                     break;
 
                 default:
