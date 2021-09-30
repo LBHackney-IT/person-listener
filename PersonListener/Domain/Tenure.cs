@@ -29,17 +29,18 @@ namespace PersonListener.Domain
 
         public override bool Equals(object obj)
         {
-            if (GetType() != obj.GetType()) return false;
+            if (GetType() != obj?.GetType()) return false;
             var otherObj = (Tenure) obj;
-            return AssetFullAddress.Equals(otherObj.AssetFullAddress)
-                && AssetId.Equals(otherObj.AssetId)
-                && StartDate.Equals(otherObj.StartDate)
-                && EndDate.Equals(otherObj.EndDate)
+            return otherObj != null
+                && (String.Compare(AssetFullAddress, otherObj.AssetFullAddress) == 0)
+                && (String.Compare(AssetId, otherObj.AssetId) == 0)
+                && (String.Compare(StartDate, otherObj.StartDate) == 0)
+                && (String.Compare(EndDate, otherObj.EndDate) == 0)
                 && Id.Equals(otherObj.Id)
-                && Type.Equals(otherObj.Type)
-                && Uprn.Equals(otherObj.Uprn)
-                && PaymentReference.Equals(otherObj.PaymentReference)
-                && PropertyReference.Equals(otherObj.PropertyReference);
+                && (String.Compare(Type, otherObj.Type) == 0)
+                && (String.Compare(Uprn, otherObj.Uprn) == 0)
+                && (String.Compare(PaymentReference, otherObj.PaymentReference) == 0)
+                && (String.Compare(PropertyReference, otherObj.PropertyReference) == 0);
         }
 
         public override int GetHashCode()

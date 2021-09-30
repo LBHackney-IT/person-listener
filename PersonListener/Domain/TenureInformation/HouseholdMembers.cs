@@ -14,14 +14,15 @@ namespace PersonListener.Domain.TenureInformation
 
         public override bool Equals(object obj)
         {
-            if (GetType() != obj.GetType()) return false;
+            if (GetType() != obj?.GetType()) return false;
             var otherObj = (HouseholdMembers) obj;
-            return Id.Equals(otherObj.Id)
-                && Type.Equals(otherObj.Type)
-                && FullName.Equals(otherObj.FullName)
+            return otherObj != null
+                && Id.Equals(otherObj.Id)
+                && (String.Compare(Type, otherObj.Type) == 0)
+                && (String.Compare(FullName, otherObj.FullName) == 0)
                 && IsResponsible.Equals(otherObj.IsResponsible)
                 && DateOfBirth.Equals(otherObj.DateOfBirth)
-                && PersonTenureType.Equals(otherObj.PersonTenureType);
+                && (String.Compare(PersonTenureType, otherObj.PersonTenureType) == 0);
         }
 
         public override int GetHashCode()

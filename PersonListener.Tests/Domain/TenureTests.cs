@@ -87,6 +87,21 @@ namespace PersonListener.Tests.Domain
         }
 
         [Fact]
+        public void EqualsTestNullObjectReturnsFalse()
+        {
+            _classUnderTest = _fixture.Create<Tenure>();
+            _classUnderTest.Equals(null).Should().BeFalse();
+        }
+
+        [Fact]
+        public void EqualsTestWithNullsEquivalentObjectReturnsTrue()
+        {
+            _classUnderTest = new Tenure();
+            var compare = new Tenure();
+            _classUnderTest.Equals(compare).Should().BeTrue();
+        }
+
+        [Fact]
         public void GetHashCodeTest()
         {
             _classUnderTest = _fixture.Create<Tenure>();
