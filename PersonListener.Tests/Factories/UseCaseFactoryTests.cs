@@ -83,6 +83,13 @@ namespace PersonListener.Tests.Factories
         }
 
         [Fact]
+        public void CreateUseCaseForMessageTestRemovePersonFromTenureEvent()
+        {
+            _event = ConstructEvent(EventTypes.PersonRemovedFromTenureEvent);
+            TestMessageProcessingCreation<IPersonRemovedFromTenureUseCase>(_event);
+        }
+
+        [Fact]
         public void CreateUseCaseForMessageTestTenureUpdatedEvent()
         {
             _event = ConstructEvent(EventTypes.TenureUpdatedEvent);
