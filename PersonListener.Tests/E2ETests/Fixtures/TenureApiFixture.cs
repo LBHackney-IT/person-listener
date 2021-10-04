@@ -1,17 +1,18 @@
-using PersonListener.Domain.TenureInformation;
 using AutoFixture;
+using Force.DeepCloner;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Person.Infrastructure;
+using Hackney.Shared.Tenure.Boundary.Response;
+using Hackney.Shared.Tenure.Domain;
+using PersonListener.Boundary;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using PersonListener.Boundary;
-using Force.DeepCloner;
-using PersonListener.Domain;
-using PersonListener.Infrastructure;
 
 namespace PersonListener.Tests.E2ETests.Fixtures
 {
@@ -22,7 +23,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         private static HttpListener _httpListener;
         public static TenureResponseObject TenureResponse { get; private set; }
 
-        public Tenure Tenure { get; private set; }
+        //public Tenure Tenure { get; private set; }
 
         public List<string> ReceivedCorrelationIds { get; private set; } = new List<string>();
 
@@ -34,8 +35,6 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         public EventData MessageEventData { get; private set; }
 
         public List<TenureResponseObject> TenureResponses { get; private set; } = new List<TenureResponseObject>();
-
-
 
         public TenureApiFixture()
         {
@@ -159,7 +158,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
             }
             var hms = _fixture.Build<HouseholdMembers>()
                               .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-40))
-                              .With(x => x.PersonTenureType, Enum.GetName(typeof(PersonType), personType))
+                              .With(x => x.PersonTenureType, (PersonTenureType) Enum.Parse(typeof(PersonTenureType), Enum.GetName(typeof(PersonType), personType)))
                               .With(x => x.IsResponsible, isResponsible)
                               .CreateMany(3).ToList();
             hms.Last().Id = personId;
@@ -187,7 +186,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
                                       .With(x => x.Id, id)
                                       .With(x => x.HouseholdMembers,
                                                  _fixture.Build<HouseholdMembers>()
-                                                         .With(y => y.PersonTenureType, "Occupant")
+                                                         .With(y => y.PersonTenureType, PersonTenureType.Occupant)
                                                          .CreateMany(3)
                                                          .ToList())
                                       .Create();
@@ -198,7 +197,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
             return _fixture.Build<HouseholdMembers>()
                            .With(x => x.Id, () => Guid.NewGuid())
                            .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-40))
-                           .With(x => x.PersonTenureType, "Tenant")
+                           .With(x => x.PersonTenureType, PersonTenureType.Tenant)
                            .CreateMany(count).ToList();
         }
 

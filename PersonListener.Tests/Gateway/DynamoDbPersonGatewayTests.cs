@@ -1,12 +1,12 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using FluentAssertions;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Factories;
+using Hackney.Shared.Person.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Moq;
-using PersonListener.Domain;
-using PersonListener.Factories;
 using PersonListener.Gateway;
-using PersonListener.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

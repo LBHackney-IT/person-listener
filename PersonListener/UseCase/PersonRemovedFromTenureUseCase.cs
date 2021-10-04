@@ -1,7 +1,9 @@
 using Hackney.Core.Logging;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Tenure.Boundary.Response;
+using Hackney.Shared.Tenure.Domain;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
@@ -9,7 +11,6 @@ using PersonListener.UseCase.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -38,8 +39,6 @@ namespace PersonListener.UseCase
 
             var personId = householdMember.Id;
 
-            var personTenureType = (PersonType) Enum.Parse(typeof(PersonType), householdMember.PersonTenureType);
-
             Person person = await _gateway.GetPersonByIdAsync(personId).ConfigureAwait(false);
             if (person is null) throw new EntityNotFoundException<Person>(personId);
 
@@ -48,7 +47,6 @@ namespace PersonListener.UseCase
             if (person.Tenures.Any(x => x.Id == message.EntityId))
                 listPersonTenures.Remove(person.Tenures.First(x => x.Id == message.EntityId));
             person.Tenures = listPersonTenures;
-            //// Also removes the person types list if necessary
 
             //update the person.personType
             UpdatePersonType(person, message);
@@ -69,7 +67,13 @@ namespace PersonListener.UseCase
         private PersonType GetPersonTypeForTenure(TenureResponseObject tenure, Guid personId)
         {
             var hm = tenure.HouseholdMembers.First(x => x.Id == personId);
-            return TenureTypes.GetPersonTenureType(tenure.TenureType.Code, hm.IsResponsible);
+            var tt = new TenureType()
+            {
+                Code = tenure.TenureType.Code,
+                Description = tenure.TenureType.Description
+            };
+            var personTenureType = TenureTypes.GetPersonTenureType(tt, hm.IsResponsible);
+            return (PersonType) Enum.Parse(typeof(PersonType), Enum.GetName(typeof(PersonTenureType), personTenureType));
         }
 
         private static HouseholdMembers GetDeletedHouseholdMember(EventData eventData)

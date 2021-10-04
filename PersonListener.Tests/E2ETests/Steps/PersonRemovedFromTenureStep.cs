@@ -4,16 +4,14 @@ using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
 using AutoFixture;
 using FluentAssertions;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Person.Infrastructure;
 using Moq;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Factories;
-using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -23,7 +21,6 @@ namespace PersonListener.Tests.E2ETests.Steps
     public class PersonRemovedFromTenureStep : BaseSteps
     {
         private new readonly Fixture _fixture = new Fixture();
-        //private readonly EntityFactory _entityFactory = new EntityFactory();
         private new Exception _lastException;
         protected new readonly Guid _correlationId = Guid.NewGuid();
 
@@ -83,7 +80,7 @@ namespace PersonListener.Tests.E2ETests.Steps
             (_lastException as EntityNotFoundException<Person>).Id.Should().Be(id);
         }
 
-        public async Task ThenTheIndexIsUpdatedWithThePerson(Person person, Guid tenureId, IDynamoDBContext dbContext)
+        public async Task ThenTheDatabaseIsUpdatedWithThePerson(Person person, Guid tenureId, IDynamoDBContext dbContext)
         {
             var result = await dbContext.LoadAsync<PersonDbEntity>(person.Id)
                                        .ConfigureAwait(false);
@@ -92,24 +89,6 @@ namespace PersonListener.Tests.E2ETests.Steps
             result.Tenures.Should().NotContain(x => x.Id == tenureId);
         }
 
-        public void ThenATenureNotFoundExceptionIsThrown(Guid id)
-        {
-            _lastException.Should().NotBeNull();
-            _lastException.Should().BeOfType(typeof(EntityNotFoundException<Tenure>));
-            (_lastException as EntityNotFoundException<Tenure>).Id.Should().Be(id);
-        }
-
-        public async Task ThenTheIndexIsUpdatedWithTheTenure(Tenure tenure, IDynamoDBContext dbContext)
-        {
-            var result = await dbContext.LoadAsync<Tenure>(tenure.Id)
-                                       .ConfigureAwait(false);
-
-
-            result.Should().BeEquivalentTo(tenure);
-        }
-
-
-
         public async Task ThenThePersonHasTheTenureRemoved(Guid personId, Guid tenureId, IDynamoDBContext dbContext)
         {
             var result = await dbContext.LoadAsync<PersonDbEntity>(personId)
@@ -117,7 +96,7 @@ namespace PersonListener.Tests.E2ETests.Steps
 
 
             result.Tenures.Should().NotContain(x => x.Id == tenureId);
-            result.PersonTypes.Should().NotContain("Freeholder");
+            result.PersonTypes.Should().NotContain(PersonType.Freeholder);
         }
     }
 }

@@ -1,9 +1,9 @@
 using AutoFixture;
 using FluentAssertions;
+using Hackney.Shared.Tenure.Boundary.Response;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway;
 using PersonListener.Infrastructure.Exceptions;
 using System;
