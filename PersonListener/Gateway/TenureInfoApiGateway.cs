@@ -1,6 +1,6 @@
 using Hackney.Core.Logging;
+using Hackney.Shared.Tenure.Boundary.Response;
 using Microsoft.Extensions.Configuration;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure.Exceptions;
 using System;

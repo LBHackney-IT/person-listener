@@ -1,9 +1,6 @@
-using Amazon.DynamoDBv2.DataModel;
 using PersonListener.Tests.E2ETests.Fixtures;
 using PersonListener.Tests.E2ETests.Steps;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using TestStack.BDDfy;
 using Xunit;
 

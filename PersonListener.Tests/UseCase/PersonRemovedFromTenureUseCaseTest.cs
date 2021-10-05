@@ -1,18 +1,18 @@
 using AutoFixture;
 using FluentAssertions;
 using Force.DeepCloner;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Tenure.Boundary.Response;
+using Hackney.Shared.Tenure.Domain;
 using Moq;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
-using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
 using PersonListener.UseCase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -49,7 +49,7 @@ namespace PersonListener.Tests.UseCase
             return _fixture.Build<TenureResponseObject>()
                            .With(x => x.HouseholdMembers, _fixture.Build<HouseholdMembers>()
                                                                   .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-40))
-                                                                  .With(x => x.PersonTenureType, "Tenant")
+                                                                  .With(x => x.PersonTenureType, PersonTenureType.Tenant)
                                                                   .CreateMany(3).ToList())
                            .Create();
         }
@@ -59,17 +59,17 @@ namespace PersonListener.Tests.UseCase
             return new TenureType { Code = tt.Code, Description = tt.Description };
         }
 
-        private TenureResponseObject CreateTenureTypeTenureForPerson(Guid tenureId, Guid personId, string personType)
+        private TenureResponseObject CreateTenureTypeTenureForPerson(Guid tenureId, Guid personId, PersonType personType)
         {
             TenureType tt;
             bool isResponsible;
             switch (personType)
             {
-                case "HouseholderMember":
+                case PersonType.Occupant:
                     tt = ToTenureType(TenureTypes.Secure);
                     isResponsible = false;
                     break;
-                case "Freeholder":
+                case PersonType.Freeholder:
                     tt = ToTenureType(TenureTypes.Freehold);
                     isResponsible = true;
                     break;
@@ -78,9 +78,11 @@ namespace PersonListener.Tests.UseCase
                     isResponsible = true;
                     break;
             }
+            var personTenureType = (PersonTenureType) Enum.Parse(typeof(PersonTenureType),
+                                                                 Enum.GetName(typeof(PersonType), personType));
             var hms = _fixture.Build<HouseholdMembers>()
                               .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-40))
-                              .With(x => x.PersonTenureType, personType)
+                              .With(x => x.PersonTenureType, personTenureType)
                               .With(x => x.IsResponsible, isResponsible)
                               .CreateMany(3).ToList();
             hms.Last().Id = personId;
@@ -96,7 +98,7 @@ namespace PersonListener.Tests.UseCase
         {
             if (!entityId.HasValue) return null;
 
-            var tenures = _fixture.CreateMany<Tenure>(3).ToList();
+            var tenures = _fixture.CreateMany<TenureDetails>(3).ToList();
             if (hasThisTenure)
                 tenures.Last().Id = _tenure.Id;
             var personTypes = _fixture.CreateMany<PersonType>(3).ToList();
@@ -111,7 +113,7 @@ namespace PersonListener.Tests.UseCase
             {
                 var personTenure = tenures[i];
                 var personType = personTypes[i];
-                var t = CreateTenureTypeTenureForPerson(personTenure.Id, person.Id, personType.ToString());
+                var t = CreateTenureTypeTenureForPerson(personTenure.Id, person.Id, personType);
                 _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(personTenure.Id, message.CorrelationId)).ReturnsAsync(t);
             }
 
@@ -139,7 +141,7 @@ namespace PersonListener.Tests.UseCase
             var removedHm = _fixture.Build<HouseholdMembers>()
                                     .With(x => x.Id, Guid.NewGuid())
                                     .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-40))
-                                    .With(x => x.PersonTenureType, "Tenant")
+                                    .With(x => x.PersonTenureType, PersonTenureType.Tenant)
                                     .Create();
             var personId = removedHm.Id;
             oldData.Add(removedHm);
@@ -242,7 +244,7 @@ namespace PersonListener.Tests.UseCase
             var personId = SetMessageEventData(_tenure, _message);
 
             var person = CreatePerson(_message, personId);
-            var startingPerson = person.DeepClone();
+
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id))
                                        .ReturnsAsync(person);
 

@@ -1,9 +1,10 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
-using PersonListener.Factories;
-using PersonListener.Infrastructure;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Person.Factories;
+using Hackney.Shared.Person.Infrastructure;
+using Hackney.Shared.Tenure.Boundary.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,8 +65,8 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         {
             foreach (var hm in tenure.HouseholdMembers)
             {
-                var personTenures = _fixture.CreateMany<Tenure>(2).ToList();
-                personTenures.Add(_fixture.Build<Tenure>()
+                var personTenures = _fixture.CreateMany<TenureDetails>(2).ToList();
+                personTenures.Add(_fixture.Build<TenureDetails>()
                                           .With(x => x.Id, tenure.Id)
                                           .Create());
                 var dbPerson = _fixture.Build<PersonDbEntity>()
@@ -106,7 +107,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
                                      .With(x => x.Id, id)
                                      .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-30))
                                      .With(x => x.PersonTypes, personTypes)
-                                     .With(x => x.Tenures, _fixture.CreateMany<Tenure>(3).ToList())
+                                     .With(x => x.Tenures, _fixture.CreateMany<TenureDetails>(3).ToList())
                                      .With(x => x.VersionNumber, (int?) null)
                                      .Create();
 

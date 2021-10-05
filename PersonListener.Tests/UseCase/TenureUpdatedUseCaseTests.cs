@@ -1,9 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Tenure.Boundary.Response;
+using Hackney.Shared.Tenure.Domain;
 using Moq;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
@@ -45,7 +47,7 @@ namespace PersonListener.Tests.UseCase
         {
             return _fixture.Build<TenureResponseObject>()
                            .With(x => x.HouseholdMembers, _fixture.Build<HouseholdMembers>()
-                                                                  .With(x => x.PersonTenureType, "Tenant")
+                                                                  .With(x => x.PersonTenureType, PersonTenureType.Tenant)
                                                                   .CreateMany(3)
                                                                   .ToList())
                            .Create();
@@ -212,7 +214,7 @@ namespace PersonListener.Tests.UseCase
             pt.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             pt.PaymentReference.Should().Be(tenure.PaymentReference);
             // pt.PropertyReference.Should().Be(tenure.PropertyReference); // TODO - property not yet available
-            pt.StartDate.Should().Be(tenure.StartOfTenureDate.ToFormattedDateTime());
+            pt.StartDate.Should().Be(tenure.StartOfTenureDate?.ToFormattedDateTime());
             pt.Type.Should().Be(tenure.TenureType.Description);
             pt.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
 

@@ -1,4 +1,4 @@
-using PersonListener.Domain.TenureInformation;
+using Hackney.Shared.Tenure.Boundary.Response;
 using System;
 using System.Threading.Tasks;
 
