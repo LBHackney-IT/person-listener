@@ -1,6 +1,6 @@
 using Hackney.Core.Logging;
+using Hackney.Shared.Tenure.Boundary.Response;
 using Microsoft.Extensions.Configuration;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure.Exceptions;
 using System;
@@ -47,11 +47,12 @@ namespace PersonListener.Gateway
         }
 
         [LogCall]
-        public async Task<TenureResponseObject> GetTenureInfoByIdAsync(Guid id)
+        public async Task<TenureResponseObject> GetTenureInfoByIdAsync(Guid id, Guid correlationId)
         {
             var client = _httpClientFactory.CreateClient();
             var getTenureRoute = $"{_getTenureApiRoute}/tenures/{id}";
 
+            client.DefaultRequestHeaders.Add("x-correlation-id", correlationId.ToString());
             client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_getTenureApiToken);
             var response = await client.GetAsync(new Uri(getTenureRoute))
                                        .ConfigureAwait(false);

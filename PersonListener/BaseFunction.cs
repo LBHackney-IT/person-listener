@@ -44,7 +44,6 @@ namespace PersonListener
 
             ConfigureServices(services);
 
-            // TODO - Remove if not using DynamoDb
             if (Configuration.GetValue<bool>("DynamoDb_LocalMode"))
                 AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
 

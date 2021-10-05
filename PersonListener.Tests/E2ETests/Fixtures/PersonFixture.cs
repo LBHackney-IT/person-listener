@@ -1,8 +1,10 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
-using PersonListener.Infrastructure;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Person.Factories;
+using Hackney.Shared.Person.Infrastructure;
+using Hackney.Shared.Tenure.Boundary.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +18,10 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         private readonly IDynamoDBContext _dbContext;
 
         public PersonDbEntity DbEntity { get; private set; }
+
         public Guid DbEntityId { get; private set; }
 
-        public List<PersonDbEntity> Persons { get; private set; } = new List<PersonDbEntity>();
+        public List<PersonDbEntity> PersonsDbEntity { get; private set; } = new List<PersonDbEntity>();
 
         public PersonFixture(IDynamoDBContext dbContext)
         {
@@ -62,8 +65,8 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         {
             foreach (var hm in tenure.HouseholdMembers)
             {
-                var personTenures = _fixture.CreateMany<Tenure>(2).ToList();
-                personTenures.Add(_fixture.Build<Tenure>()
+                var personTenures = _fixture.CreateMany<TenureDetails>(2).ToList();
+                personTenures.Add(_fixture.Build<TenureDetails>()
                                           .With(x => x.Id, tenure.Id)
                                           .Create());
                 var dbPerson = _fixture.Build<PersonDbEntity>()
@@ -78,7 +81,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
                 _dbContext.SaveAsync<PersonDbEntity>(dbPerson).GetAwaiter().GetResult();
                 dbPerson.VersionNumber = 0;
 
-                Persons.Add(dbPerson);
+                PersonsDbEntity.Add(dbPerson);
             }
         }
 
@@ -95,6 +98,25 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         public void GivenAPersonDoesNotExist(Guid id)
         {
             // Nothing to do here
+        }
+
+        public Person GivenThePersonExistsWithTenure(Guid id, Guid tenureId)
+        {
+            var personTypes = new List<PersonType> { PersonType.Tenant, PersonType.HouseholdMember, PersonType.Freeholder };
+            var ResponseObject = _fixture.Build<Person>()
+                                     .With(x => x.Id, id)
+                                     .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-30))
+                                     .With(x => x.PersonTypes, personTypes)
+                                     .With(x => x.Tenures, _fixture.CreateMany<TenureDetails>(3).ToList())
+                                     .With(x => x.VersionNumber, (int?) null)
+                                     .Create();
+
+            ResponseObject.Tenures.Last().Id = tenureId;
+            var dbEntity = ResponseObject.ToDatabase();
+            _dbContext.SaveAsync(dbEntity).GetAwaiter().GetResult();
+            ResponseObject.VersionNumber = 0;
+            DbEntity = dbEntity;
+            return ResponseObject;
         }
     }
 }

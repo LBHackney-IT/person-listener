@@ -2,9 +2,11 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.SQSEvents;
 using FluentAssertions;
 using Force.DeepCloner;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Person.Infrastructure;
+using Hackney.Shared.Tenure.Boundary.Response;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
 using System;
@@ -79,7 +81,7 @@ namespace PersonListener.Tests.E2ETests.Steps
             newTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             newTenure.PaymentReference.Should().Be(tenure.PaymentReference);
             // newTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference); // TODO...
-            newTenure.StartDate.Should().Be(tenure.StartOfTenureDate.ToFormattedDateTime());
+            newTenure.StartDate.Should().Be(tenure.StartOfTenureDate?.ToFormattedDateTime());
             newTenure.Type.Should().Be(tenure.TenureType.Description);
             newTenure.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
 

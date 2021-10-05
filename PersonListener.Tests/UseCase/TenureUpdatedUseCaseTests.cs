@@ -1,9 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Tenure.Boundary.Response;
+using Hackney.Shared.Tenure.Domain;
 using Moq;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
@@ -27,6 +29,7 @@ namespace PersonListener.Tests.UseCase
         private readonly TenureResponseObject _tenure;
 
         private readonly Fixture _fixture;
+        private static readonly Guid _correlationId = Guid.NewGuid();
 
         public TenureUpdatedUseCaseTests()
         {
@@ -44,7 +47,7 @@ namespace PersonListener.Tests.UseCase
         {
             return _fixture.Build<TenureResponseObject>()
                            .With(x => x.HouseholdMembers, _fixture.Build<HouseholdMembers>()
-                                                                  .With(x => x.PersonTenureType, "Tenant")
+                                                                  .With(x => x.PersonTenureType, PersonTenureType.Tenant)
                                                                   .CreateMany(3)
                                                                   .ToList())
                            .Create();
@@ -65,6 +68,7 @@ namespace PersonListener.Tests.UseCase
             return _fixture.Build<EntityEventSns>()
                            .With(x => x.EventType, eventType)
                            .With(x => x.EntityId, tenureId)
+                           .With(x => x.CorrelationId, _correlationId)
                            .Create();
         }
 
@@ -92,7 +96,7 @@ namespace PersonListener.Tests.UseCase
         public void ProcessMessageAsyncTestGetTenureExceptionThrown()
         {
             var exMsg = "This is an error";
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ThrowsAsync(new Exception(exMsg));
 
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
@@ -102,7 +106,7 @@ namespace PersonListener.Tests.UseCase
         [Fact]
         public void ProcessMessageAsyncTestGetTenureReturnsNullThrows()
         {
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync((TenureResponseObject) null);
 
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
@@ -113,7 +117,7 @@ namespace PersonListener.Tests.UseCase
         public async Task ProcessMessageAsyncTestNullHouseholdMembersDoesNothing()
         {
             _tenure.HouseholdMembers = null;
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
 
@@ -125,7 +129,7 @@ namespace PersonListener.Tests.UseCase
         public async Task ProcessMessageAsyncTestEmptyHouseholdMembersDoesNothing()
         {
             _tenure.HouseholdMembers.Clear();
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
 
@@ -136,7 +140,7 @@ namespace PersonListener.Tests.UseCase
         [Fact]
         public void ProcessMessageAsyncTestMissingPersonThrows()
         {
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
             func.Should().Throw<EntityNotFoundException<Person>>();
@@ -148,7 +152,7 @@ namespace PersonListener.Tests.UseCase
         [Fact]
         public void ProcessMessageAsyncTestMissingPersonTenureThrows()
         {
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             var person = CreatePerson(_tenure.HouseholdMembers.First().Id);
             _mockGateway.Setup(x => x.GetPersonByIdAsync(person.Id)).ReturnsAsync(person);
@@ -163,7 +167,7 @@ namespace PersonListener.Tests.UseCase
         [Fact]
         public void ProcessMessageAsyncTestSavePersonExceptionThrown()
         {
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             SetupPersonTenures();
 
@@ -186,7 +190,7 @@ namespace PersonListener.Tests.UseCase
         {
             if (nullEndDate) _tenure.EndOfTenureDate = null;
 
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
             var persons = SetupPersonTenures();
 
@@ -210,7 +214,7 @@ namespace PersonListener.Tests.UseCase
             pt.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             pt.PaymentReference.Should().Be(tenure.PaymentReference);
             // pt.PropertyReference.Should().Be(tenure.PropertyReference); // TODO - property not yet available
-            pt.StartDate.Should().Be(tenure.StartOfTenureDate.ToFormattedDateTime());
+            pt.StartDate.Should().Be(tenure.StartOfTenureDate?.ToFormattedDateTime());
             pt.Type.Should().Be(tenure.TenureType.Description);
             pt.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
 
