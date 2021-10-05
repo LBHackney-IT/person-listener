@@ -1,7 +1,9 @@
 using Hackney.Core.Logging;
+using Hackney.Shared.Person;
+using Hackney.Shared.Person.Domain;
+using Hackney.Shared.Tenure.Boundary.Response;
+using Hackney.Shared.Tenure.Domain;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
@@ -31,7 +33,7 @@ namespace PersonListener.UseCase
             if (message is null) throw new ArgumentNullException(nameof(message));
 
             // #1 - Get the tenure
-            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(message.EntityId)
+            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(message.EntityId, message.CorrelationId)
                                              .ConfigureAwait(false);
             if (tenure is null) throw new EntityNotFoundException<TenureResponseObject>(message.EntityId);
 
@@ -40,17 +42,18 @@ namespace PersonListener.UseCase
             if (householdMember is null) throw new HouseholdMembersNotChangedException(message.EntityId, message.CorrelationId);
 
             var personId = householdMember.Id;
-            var personTenureType = (PersonType) Enum.Parse(typeof(PersonType), householdMember.PersonTenureType);
+            var personTenureType = (PersonType) Enum.Parse(typeof(PersonType),
+                                                           Enum.GetName(typeof(PersonTenureType), householdMember.PersonTenureType));
 
             Person person = await _gateway.GetPersonByIdAsync(personId).ConfigureAwait(false);
             if (person is null) throw new EntityNotFoundException<Person>(personId);
 
             // #3 - Update the person with the tenure info
-            List<Tenure> tenures = (person.Tenures is null) ? new List<Tenure>() : new List<Tenure>(person.Tenures);
+            List<TenureDetails> tenures = (person.Tenures is null) ? new List<TenureDetails>() : new List<TenureDetails>(person.Tenures);
             var personTenure = tenures.FirstOrDefault(x => x.Id == tenure.Id);
             if (personTenure is null)
             {
-                personTenure = new Tenure() { Id = tenure.Id };
+                personTenure = new TenureDetails() { Id = tenure.Id };
                 tenures.Add(personTenure);
             }
 
@@ -59,7 +62,7 @@ namespace PersonListener.UseCase
             personTenure.EndDate = tenure.EndOfTenureDate?.ToFormattedDateTime();
             personTenure.PaymentReference = tenure.PaymentReference;
             //personTenure.PropertyReference = ???; // TODO - ignore for now...
-            personTenure.StartDate = tenure.StartOfTenureDate.ToFormattedDateTime();
+            personTenure.StartDate = tenure.StartOfTenureDate?.ToFormattedDateTime();
             personTenure.Type = tenure.TenureType.Description;
             personTenure.Uprn = tenure.TenuredAsset.Uprn;
 
@@ -89,7 +92,8 @@ namespace PersonListener.UseCase
         {
             var dataDic = (data is Dictionary<string, object>) ? data as Dictionary<string, object> : ConvertFromObject<Dictionary<string, object>>(data);
             var hmsObj = dataDic["householdMembers"];
-            return (hmsObj is List<HouseholdMembers>) ? hmsObj as List<HouseholdMembers> : ConvertFromObject<List<HouseholdMembers>>(hmsObj);
+            return (hmsObj is List<HouseholdMembers>)
+                ? hmsObj as List<HouseholdMembers> : ConvertFromObject<List<HouseholdMembers>>(hmsObj);
         }
 
         private static T ConvertFromObject<T>(object obj) where T : class

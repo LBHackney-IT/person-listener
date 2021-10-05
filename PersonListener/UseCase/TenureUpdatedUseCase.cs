@@ -1,7 +1,8 @@
 using Hackney.Core.Logging;
+using Hackney.Shared.Person;
+using Hackney.Shared.Tenure.Boundary.Response;
+using Hackney.Shared.Tenure.Domain;
 using PersonListener.Boundary;
-using PersonListener.Domain;
-using PersonListener.Domain.TenureInformation;
 using PersonListener.Gateway.Interfaces;
 using PersonListener.Infrastructure;
 using PersonListener.Infrastructure.Exceptions;
@@ -31,7 +32,7 @@ namespace PersonListener.UseCase
             if (message is null) throw new ArgumentNullException(nameof(message));
 
             // #1 - Get the tenure
-            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(message.EntityId)
+            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(message.EntityId, message.CorrelationId)
                                              .ConfigureAwait(false);
             if (tenure is null) throw new EntityNotFoundException<TenureResponseObject>(message.EntityId);
 
@@ -67,7 +68,7 @@ namespace PersonListener.UseCase
             personTenure.EndDate = tenure.EndOfTenureDate?.ToFormattedDateTime();
             personTenure.PaymentReference = tenure.PaymentReference;
             // personTenure.PropertyReference = tenure.PropertyReference; // TODO - property not yet available
-            personTenure.StartDate = tenure.StartOfTenureDate.ToFormattedDateTime();
+            personTenure.StartDate = tenure.StartOfTenureDate?.ToFormattedDateTime();
             personTenure.Type = tenure.TenureType.Description;
             personTenure.Uprn = tenure.TenuredAsset.Uprn;
 
