@@ -67,7 +67,7 @@ namespace PersonListener.UseCase
             personTenure.AssetId = tenure.TenuredAsset.Id.ToString();
             personTenure.EndDate = tenure.EndOfTenureDate?.ToFormattedDateTime();
             personTenure.PaymentReference = tenure.PaymentReference;
-            // personTenure.PropertyReference = tenure.PropertyReference; // TODO - property not yet available
+            personTenure.PropertyReference = tenure.TenuredAsset.PropertyReference;
             personTenure.StartDate = tenure.StartOfTenureDate?.ToFormattedDateTime();
             personTenure.Type = tenure.TenureType.Description;
             personTenure.Uprn = tenure.TenuredAsset.Uprn;

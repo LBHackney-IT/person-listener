@@ -80,7 +80,7 @@ namespace PersonListener.Tests.E2ETests.Steps
             newTenure.AssetId.Should().Be(tenure.TenuredAsset.Id.ToString());
             newTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             newTenure.PaymentReference.Should().Be(tenure.PaymentReference);
-            // newTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference); // TODO...
+            newTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference);
             newTenure.StartDate.Should().Be(tenure.StartOfTenureDate?.ToFormattedDateTime());
             newTenure.Type.Should().Be(tenure.TenureType.Description);
             newTenure.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
