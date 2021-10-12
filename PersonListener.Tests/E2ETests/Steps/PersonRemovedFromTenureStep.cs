@@ -68,11 +68,6 @@ namespace PersonListener.Tests.E2ETests.Steps
 
         }
 
-        public void ThenTheCorrelationIdWasUsedInTheApiCall(List<string> receivedCorrelationIds)
-        {
-            receivedCorrelationIds.Should().Contain(_correlationId.ToString());
-        }
-
         public void ThenAPersonNotFoundExceptionIsThrown(Guid id)
         {
             _lastException.Should().NotBeNull();
