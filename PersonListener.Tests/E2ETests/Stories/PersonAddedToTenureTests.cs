@@ -52,11 +52,11 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var tenureId = Guid.NewGuid();
             this.Given(g => _tenureApiFixture.GivenTheTenureExists(tenureId))
-                .And(h => _steps.GivenAMessageWithPersonAdded(TenureApiFixture.TenureResponse))
+                .And(h => _steps.GivenAMessageWithPersonAdded(_tenureApiFixture.ResponseObject))
                 .And(h => _personFixture.GivenAPersonAlreadyExists(_steps.NewPersonId))
                 .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
-                .Then(t => _steps.ThenThePersonIsUpdated(_personFixture.DbEntity, TenureApiFixture.TenureResponse,
+                .Then(t => _steps.ThenThePersonIsUpdated(_personFixture.DbEntity, _tenureApiFixture.ResponseObject,
                                                          _dbFixture.DynamoDbContext))
                 .BDDfy();
         }
@@ -77,7 +77,7 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var tenureId = Guid.NewGuid();
             this.Given(g => _tenureApiFixture.GivenTheTenureExists(tenureId))
-                .And(h => _steps.GivenAMessageWithNoPersonAdded(TenureApiFixture.TenureResponse))
+                .And(h => _steps.GivenAMessageWithNoPersonAdded(_tenureApiFixture.ResponseObject))
                 .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
                 .Then(t => _steps.ThenAHouseholdMembersNotChangedExceptionIsThrown(tenureId))
@@ -89,7 +89,7 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var tenureId = Guid.NewGuid();
             this.Given(g => _tenureApiFixture.GivenTheTenureExists(tenureId))
-                .And(h => _steps.GivenAMessageWithPersonAdded(TenureApiFixture.TenureResponse))
+                .And(h => _steps.GivenAMessageWithPersonAdded(_tenureApiFixture.ResponseObject))
                 .And(h => _personFixture.GivenAPersonDoesNotExist(_steps.NewPersonId))
                 .When(w => _steps.WhenTheFunctionIsTriggered(_steps.TheMessage))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))

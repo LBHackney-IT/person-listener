@@ -58,7 +58,7 @@ namespace PersonListener.Tests.E2ETests.Stories
         }
 
         [Fact]
-        public void PersonUpdated()
+        public void TenureRemovedFromPerson()
         {
             var tenureId = Guid.NewGuid();
             var removedPersonId = Guid.NewGuid();

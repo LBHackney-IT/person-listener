@@ -22,7 +22,6 @@ namespace PersonListener.Tests.E2ETests.Steps
     {
         private new readonly Fixture _fixture = new Fixture();
         private new Exception _lastException;
-        protected new readonly Guid _correlationId = Guid.NewGuid();
 
         public PersonRemovedFromTenureStep()
         { }

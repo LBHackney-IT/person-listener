@@ -16,9 +16,6 @@ namespace PersonListener.Tests.E2ETests.Steps
 {
     public class AccountCreatedUseCaseSteps : BaseSteps
     {
-        public SQSEvent.SQSMessage TheMessage { get; private set; }
-        public Guid NewPersonId { get; private set; }
-
         public AccountCreatedUseCaseSteps()
         {
             _eventType = EventTypes.AccountCreatedEvent;

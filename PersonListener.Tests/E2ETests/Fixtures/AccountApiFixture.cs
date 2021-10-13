@@ -8,14 +8,14 @@ namespace PersonListener.Tests.E2ETests.Fixtures
     public class AccountApiFixture : BaseApiFixture<AccountResponseObject>
     {
         private readonly Fixture _fixture = new Fixture();
-        public static string AccountApiRoute => "http://localhost:6677/api/v1/";
-        public static string AccountApiToken => "sdjkhfgsdkjfgsdjfgh";
+        private const string AccountApiRoute = "http://localhost:6677/api/v1/";
+        private const string AccountApiToken = "sdjkhfgsdkjfgsdjfgh";
 
         public AccountApiFixture()
             : base(AccountApiRoute, AccountApiToken)
         {
-            Environment.SetEnvironmentVariable("AccountApiUrl", ApiRoute);
-            Environment.SetEnvironmentVariable("AccountApiToken", ApiToken);
+            Environment.SetEnvironmentVariable("AccountApiUrl", AccountApiRoute);
+            Environment.SetEnvironmentVariable("AccountApiToken", AccountApiToken);
         }
 
         protected override void Dispose(bool disposing)

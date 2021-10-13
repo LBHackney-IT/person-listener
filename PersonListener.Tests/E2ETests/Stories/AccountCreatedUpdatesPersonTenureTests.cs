@@ -57,11 +57,11 @@ namespace PersonListener.Tests.E2ETests.Stories
             var accountId = Guid.NewGuid();
             this.Given(g => _accountApiFixture.GivenTheAccountExists(accountId))
                 .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.Tenure.TenancyId))
-                .And(i => _personFixture.GivenThePersonsAlreadyExist(TenureApiFixture.TenureResponse))
+                .And(i => _personFixture.GivenThePersonsAlreadyExist(_tenureApiFixture.ResponseObject))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
-                .Then(t => _steps.ThenThePersonsAreUpdated(_personFixture.PersonsDbEntity, TenureApiFixture.TenureResponse,
+                .Then(t => _steps.ThenThePersonsAreUpdated(_personFixture.PersonsDbEntity, _tenureApiFixture.ResponseObject,
                                                            _accountApiFixture.ResponseObject, _dbFixture.DynamoDbContext))
                 .BDDfy();
         }
@@ -72,8 +72,8 @@ namespace PersonListener.Tests.E2ETests.Stories
             var accountId = Guid.NewGuid();
             this.Given(g => _accountApiFixture.GivenTheAccountDoesNotExist(accountId))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))
-                .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
                 .Then(t => _steps.ThenAnAccountNotFoundExceptionIsThrown(accountId))
+                .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
                 .BDDfy();
         }
 
@@ -96,7 +96,7 @@ namespace PersonListener.Tests.E2ETests.Stories
             var accountId = Guid.NewGuid();
             this.Given(g => _accountApiFixture.GivenTheAccountExists(accountId))
                 .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.Tenure.TenancyId))
-                .And(g => _tenureApiFixture.GivenTheTenureHasNoHouseholdMembers(TenureApiFixture.TenureResponse))
+                .And(g => _tenureApiFixture.GivenTheTenureHasNoHouseholdMembers(_tenureApiFixture.ResponseObject))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
@@ -111,12 +111,12 @@ namespace PersonListener.Tests.E2ETests.Stories
             this.Given(g => _accountApiFixture.GivenTheAccountExists(accountId))
                 .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.Tenure.TenancyId))
                 .And(h => _personFixture.GivenAPersonDoesNotExist(
-                    TenureApiFixture.TenureResponse.HouseholdMembers.First().Id))
+                    _tenureApiFixture.ResponseObject.HouseholdMembers.First().Id))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
                 .Then(t => _steps.ThenAnAggregatedPersonNotFoundExceptionIsThrown(
-                    TenureApiFixture.TenureResponse.HouseholdMembers.Select(x => x.Id)))
+                    _tenureApiFixture.ResponseObject.HouseholdMembers.Select(x => x.Id)))
                 .BDDfy();
         }
     }
