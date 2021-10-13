@@ -246,7 +246,7 @@ namespace PersonListener.Tests.UseCase
             personTenure.AssetId.Should().Be(tenure.TenuredAsset.Id.ToString());
             personTenure.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             personTenure.PaymentReference.Should().Be(tenure.PaymentReference);
-            // personTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference); // TODO...
+            personTenure.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference);
             personTenure.StartDate.Should().Be(tenure.StartOfTenureDate?.ToFormattedDateTime());
             personTenure.Type.Should().Be(tenure.TenureType.Description);
             personTenure.Uprn.Should().Be(tenure.TenuredAsset.Uprn);

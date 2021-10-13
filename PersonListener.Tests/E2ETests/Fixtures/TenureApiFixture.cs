@@ -23,8 +23,6 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         private static HttpListener _httpListener;
         public static TenureResponseObject TenureResponse { get; private set; }
 
-        //public Tenure Tenure { get; private set; }
-
         public List<string> ReceivedCorrelationIds { get; private set; } = new List<string>();
 
         public static string TenureApiRoute => "http://localhost:5678/api/v1/";

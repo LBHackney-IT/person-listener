@@ -213,7 +213,7 @@ namespace PersonListener.Tests.UseCase
             pt.AssetId.Should().Be(tenure.TenuredAsset.Id.ToString());
             pt.EndDate.Should().Be(tenure.EndOfTenureDate?.ToFormattedDateTime());
             pt.PaymentReference.Should().Be(tenure.PaymentReference);
-            // pt.PropertyReference.Should().Be(tenure.PropertyReference); // TODO - property not yet available
+            pt.PropertyReference.Should().Be(tenure.TenuredAsset.PropertyReference);
             pt.StartDate.Should().Be(tenure.StartOfTenureDate?.ToFormattedDateTime());
             pt.Type.Should().Be(tenure.TenureType.Description);
             pt.Uprn.Should().Be(tenure.TenuredAsset.Uprn);
