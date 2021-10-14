@@ -56,7 +56,7 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var accountId = Guid.NewGuid();
             this.Given(g => _accountApiFixture.GivenTheAccountExists(accountId))
-                .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.Tenure.TenancyId))
+                .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.TargetId))
                 .And(i => _personFixture.GivenThePersonsAlreadyExist(_tenureApiFixture.ResponseObject))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
@@ -82,11 +82,11 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var accountId = Guid.NewGuid();
             this.Given(g => _accountApiFixture.GivenTheAccountExists(accountId))
-                .And(h => _tenureApiFixture.GivenTheTenureDoesNotExist(_accountApiFixture.ResponseObject.Tenure.TenancyId))
+                .And(h => _tenureApiFixture.GivenTheTenureDoesNotExist(_accountApiFixture.ResponseObject.TargetId))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
-                .Then(t => _steps.ThenATenureNotFoundExceptionIsThrown(_accountApiFixture.ResponseObject.Tenure.TenancyId))
+                .Then(t => _steps.ThenATenureNotFoundExceptionIsThrown(_accountApiFixture.ResponseObject.TargetId))
                 .BDDfy();
         }
 
@@ -95,7 +95,7 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var accountId = Guid.NewGuid();
             this.Given(g => _accountApiFixture.GivenTheAccountExists(accountId))
-                .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.Tenure.TenancyId))
+                .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.TargetId))
                 .And(g => _tenureApiFixture.GivenTheTenureHasNoHouseholdMembers(_tenureApiFixture.ResponseObject))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_accountApiFixture.ReceivedCorrelationIds))
@@ -109,7 +109,7 @@ namespace PersonListener.Tests.E2ETests.Stories
         {
             var accountId = Guid.NewGuid();
             this.Given(g => _accountApiFixture.GivenTheAccountExists(accountId))
-                .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.Tenure.TenancyId))
+                .And(h => _tenureApiFixture.GivenTheTenureExists(_accountApiFixture.ResponseObject.TargetId))
                 .And(h => _personFixture.GivenAPersonDoesNotExist(
                     _tenureApiFixture.ResponseObject.HouseholdMembers.First().Id))
                 .When(w => _steps.WhenTheFunctionIsTriggered(accountId))

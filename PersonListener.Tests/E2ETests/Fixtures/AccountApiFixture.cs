@@ -32,7 +32,8 @@ namespace PersonListener.Tests.E2ETests.Fixtures
                                                  .With(x => x.Id, id)
                                                  .With(x => x.StartDate, DateTime.UtcNow.AddMonths(-1).ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ"))
                                                  .With(x => x.EndDate, "")
-                                                 .With(x => x.LastUpdated, DateTime.UtcNow.AddMinutes(-60).ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ"))
+                                                 .With(x => x.CreatedAt, DateTime.UtcNow.AddMinutes(-60).ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ"))
+                                                 .With(x => x.LastUpdatedAt, DateTime.UtcNow.AddMinutes(-60).ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ"))
                                                  .Create();
         }
 
@@ -51,7 +52,7 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         public AccountResponseObject GivenTheAccountExistsWithTenure(Guid id, Guid tenureId)
         {
             ResponseObject = ConstructAccountResponseObject(id);
-            ResponseObject.Tenure.TenancyId = tenureId;
+            ResponseObject.Tenure.TenureId = tenureId;
 
             return ResponseObject;
         }

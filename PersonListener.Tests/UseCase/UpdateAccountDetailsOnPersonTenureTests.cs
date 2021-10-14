@@ -44,13 +44,13 @@ namespace PersonListener.Tests.UseCase
             _sut = new UpdateAccountDetailsOnPersonTenure(_mockGateway.Object, _mockAccountApi.Object, _mockTenureApi.Object);
 
             _account = CreateAccount();
-            _tenure = CreateTenure(_account.Tenure.TenancyId);
+            _tenure = CreateTenure(_account.TargetId);
             _message = CreateMessage(_account.Id);
 
             _mockAccountApi.Setup(x => x.GetAccountByIdAsync(_message.EntityId, _message.CorrelationId))
                            .ReturnsAsync(_account);
 
-            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_account.Tenure.TenancyId, _message.CorrelationId))
+            _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_account.TargetId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
         }
 

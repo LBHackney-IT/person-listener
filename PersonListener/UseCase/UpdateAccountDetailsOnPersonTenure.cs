@@ -39,9 +39,9 @@ namespace PersonListener.UseCase
             if (account is null) throw new EntityNotFoundException<AccountResponseObject>(message.EntityId);
 
             // #2 - Get the tenure
-            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(account.Tenure.TenancyId, message.CorrelationId)
+            var tenure = await _tenureInfoApi.GetTenureInfoByIdAsync(account.TargetId, message.CorrelationId)
                                              .ConfigureAwait(false);
-            if (tenure is null) throw new EntityNotFoundException<TenureResponseObject>(account.Tenure.TenancyId);
+            if (tenure is null) throw new EntityNotFoundException<TenureResponseObject>(account.TargetId);
 
             // #3 - If there are no Household members we have nothing to do.
             if (tenure.HouseholdMembers is null)
