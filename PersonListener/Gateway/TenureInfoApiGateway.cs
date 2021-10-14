@@ -1,14 +1,7 @@
 using Hackney.Core.Logging;
 using Hackney.Shared.Tenure.Boundary.Response;
-using Microsoft.Extensions.Configuration;
 using PersonListener.Gateway.Interfaces;
-using PersonListener.Infrastructure.Exceptions;
 using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PersonListener.Gateway
