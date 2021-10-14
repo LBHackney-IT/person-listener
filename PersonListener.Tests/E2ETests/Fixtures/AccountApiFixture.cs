@@ -49,14 +49,6 @@ namespace PersonListener.Tests.E2ETests.Fixtures
             return ResponseObject;
         }
 
-        public AccountResponseObject GivenTheAccountExistsWithTenure(Guid id, Guid tenureId)
-        {
-            ResponseObject = ConstructAccountResponseObject(id);
-            ResponseObject.Tenure.TenureId = tenureId;
-
-            return ResponseObject;
-        }
-
         public AccountResponseObject GivenTheAccountExistsWithNoTenure(Guid id)
         {
             ResponseObject = ConstructAccountResponseObject(id);
