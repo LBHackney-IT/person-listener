@@ -99,7 +99,7 @@ resource "aws_sqs_queue_policy" "person_queue_policy" {
               "Effect": "Allow",
               "Principal": "*",
               "Action": "sqs:SendMessage",
-              "Resource": "${aws_sqs_queue.tenure_queue.arn}",
+              "Resource": "${aws_sqs_queue.person_queue.arn}",
               "Condition": {
               "ArnEquals": {
                   "aws:SourceArn": "${data.aws_ssm_parameter.accounts_sns_topic_arn.value}"
@@ -120,10 +120,10 @@ resource "aws_sns_topic_subscription" "person_queue_subscribe_to_tenure_sns" {
   raw_message_delivery = true
 }
 
-resource "aws_sns_topic_subscription" "tenure_queue_subscribe_to_accounts_sns" {
+resource "aws_sns_topic_subscription" "person_queue_subscribe_to_accounts_sns" {
   topic_arn            = data.aws_ssm_parameter.accounts_sns_topic_arn.value
   protocol             = "sqs"
-  endpoint             = aws_sqs_queue.tenure_queue.arn
+  endpoint             = aws_sqs_queue.person_queue.arn
   raw_message_delivery = true
 }
 
