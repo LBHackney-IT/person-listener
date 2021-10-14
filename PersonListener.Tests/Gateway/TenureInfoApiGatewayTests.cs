@@ -67,7 +67,7 @@ namespace PersonListener.Tests.Gateway
         }
 
         [Fact]
-        public async Task GetTenureInfoByIdAsyncCallReturnsPerson()
+        public async Task GetTenureInfoByIdAsyncCallReturnsTenure()
         {
             var tenure = new Fixture().Create<TenureResponseObject>();
             _mockApiGateway.Setup(x => x.GetByIdAsync<TenureResponseObject>(Route, _id, _correlationId))
