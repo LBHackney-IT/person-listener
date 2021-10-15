@@ -74,7 +74,7 @@ namespace PersonListener.Tests.E2ETests.Steps
             _lastException = await Record.ExceptionAsync(func);
         }
 
-        public void ThenTheCorrleationIdWasUsedInTheApiCall(List<string> receivedCorrelationIds)
+        public void ThenTheCorrelationIdWasUsedInTheApiCall(List<string> receivedCorrelationIds)
         {
             receivedCorrelationIds.Should().Contain(_correlationId.ToString());
         }

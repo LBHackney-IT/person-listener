@@ -46,9 +46,15 @@ namespace PersonListener
             services.AddScoped<IPersonAddedToTenureUseCase, PersonAddedToTenureUseCase>();
             services.AddScoped<IPersonRemovedFromTenureUseCase, PersonRemovedFromTenureUseCase>();
             services.AddScoped<ITenureUpdatedUseCase, TenureUpdatedUseCase>();
+            services.AddScoped<IUpdateAccountDetailsOnPersonTenure, UpdateAccountDetailsOnPersonTenure>();
 
             services.AddScoped<IDbPersonGateway, DynamoDbPersonGateway>();
+            services.AddScoped<IAccountApi, AccountApi>();
             services.AddScoped<ITenureInfoApiGateway, TenureInfoApiGateway>();
+
+            // Transient because otherwise all gateway's that use it will get the same instance,
+            // which is not the desired result.
+            services.AddTransient<IApiGateway, ApiGateway>();
 
             base.ConfigureServices(services);
         }
