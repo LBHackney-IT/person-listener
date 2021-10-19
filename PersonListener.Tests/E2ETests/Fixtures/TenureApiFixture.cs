@@ -21,12 +21,6 @@ namespace PersonListener.Tests.E2ETests.Fixtures
         public Guid RemovedPersonId { get; private set; }
         public EventData MessageEventData { get; private set; }
 
-        public Guid RemovedPersonId { get; private set; }
-
-        public EventData MessageEventData { get; private set; }
-
-        public List<TenureResponseObject> TenureResponses { get; private set; } = new List<TenureResponseObject>();
-
         public TenureApiFixture()
             : base(TenureApiRoute, TenureApiToken)
         {
@@ -91,56 +85,6 @@ namespace PersonListener.Tests.E2ETests.Fixtures
             tenureResponse.HouseholdMembers.Clear();
         }
 
-
-        public void GivenThePersonTenuresExist(PersonDbEntity dbEntity)
-        {
-            for (int i = 0; i < dbEntity.Tenures.Count; i++)
-            {
-                var personTenure = dbEntity.Tenures[i];
-                var personType = dbEntity.PersonTypes[i];
-                var Tenure = CreateTenureForPerson(personTenure.Id, dbEntity.Id, personType);
-                TenureResponses.Add(Tenure);
-            }
-        }
-
-        private TenureResponseObject CreateTenureForPerson(Guid tenureId, Guid personId, PersonType personType)
-        {
-            TenureType tt;
-            bool isResponsible;
-            switch (personType)
-            {
-                case PersonType.HouseholdMember:
-                    tt = TenureTypes.Secure;
-                    isResponsible = false;
-                    break;
-                case PersonType.Freeholder:
-                    tt = TenureTypes.Freehold;
-                    isResponsible = true;
-                    break;
-                default:
-                    tt = TenureTypes.Secure;
-                    isResponsible = true;
-                    break;
-            }
-            var hms = _fixture.Build<HouseholdMembers>()
-                              .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-40))
-                              .With(x => x.PersonTenureType, (PersonTenureType) Enum.Parse(typeof(PersonTenureType), Enum.GetName(typeof(PersonType), personType)))
-                              .With(x => x.IsResponsible, isResponsible)
-                              .CreateMany(3).ToList();
-            hms.Last().Id = personId;
-
-            return _fixture.Build<TenureResponseObject>()
-                           .With(x => x.Id, tenureId)
-                           .With(x => x.TenureType, tt)
-                           .With(x => x.HouseholdMembers, hms)
-                           .Create();
-        }
-
-        public void GivenTheTenureHasNoHouseholdMembers(TenureResponseObject tenureResponse)
-        {
-            tenureResponse.HouseholdMembers.Clear();
-        }
-
         public void GivenTheTenureDoesNotExist(Guid id)
         {
             // Nothing to do here
@@ -157,36 +101,6 @@ namespace PersonListener.Tests.E2ETests.Fixtures
                                                          .ToList())
                                       .Create();
             return ResponseObject;
-        }
-        private List<HouseholdMembers> CreateHouseholdMembers(int count = 3)
-        {
-            return _fixture.Build<HouseholdMembers>()
-                           .With(x => x.Id, () => Guid.NewGuid())
-                           .With(x => x.DateOfBirth, DateTime.UtcNow.AddYears(-40))
-                           .With(x => x.PersonTenureType, PersonTenureType.Tenant)
-                           .CreateMany(count).ToList();
-        }
-
-        private void CreateMessageEventDataForPersonRemoved(Guid id)
-        {
-            var oldData = CreateHouseholdMembers();
-            var newData = oldData.DeepClone();
-
-            var removedHm = CreateHouseholdMembers(1).First();
-            removedHm.Id = id;
-            oldData.Add(removedHm);
-            RemovedPersonId = id;
-
-            MessageEventData = new EventData()
-            {
-                OldData = new Dictionary<string, object> { { "householdMembers", oldData } },
-                NewData = new Dictionary<string, object> { { "householdMembers", newData } }
-            };
-        }
-
-        public void GivenAPersonWasRemoved(Guid id)
-        {
-            CreateMessageEventDataForPersonRemoved(id);
         }
         private List<HouseholdMembers> CreateHouseholdMembers(int count = 3)
         {
