@@ -45,6 +45,10 @@ data "aws_ssm_parameter" "tenure_sns_topic_arn" {
   name = "/sns-topic/development/tenure/arn"
 }
 
+data "aws_ssm_parameter" "accounts_sns_topic_arn" {
+  name = "/sns-topic/development/accounts/arn"
+}
+
 # This is the definition of the dead letter queue used whem message processsing fails for a given message
 
 resource "aws_sqs_queue" "person_dead_letter_queue" {
@@ -79,18 +83,30 @@ resource "aws_sqs_queue_policy" "person_queue_policy" {
       "Version": "2012-10-17",
       "Id": "sqspolicy",
       "Statement": [
-      {
-          "Sid": "First",
-          "Effect": "Allow",
-          "Principal": "*",
-          "Action": "sqs:SendMessage",
-          "Resource": "${aws_sqs_queue.person_queue.arn}",
-          "Condition": {
-          "ArnEquals": {
-              "aws:SourceArn": "${data.aws_ssm_parameter.tenure_sns_topic_arn.value}"
+          {
+              "Sid": "First",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "sqs:SendMessage",
+              "Resource": "${aws_sqs_queue.person_queue.arn}",
+              "Condition": {
+              "ArnEquals": {
+                  "aws:SourceArn": "${data.aws_ssm_parameter.tenure_sns_topic_arn.value}"
+              }
+              }
+          },          
+          {
+              "Sid": "Second",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "sqs:SendMessage",
+              "Resource": "${aws_sqs_queue.person_queue.arn}",
+              "Condition": {
+              "ArnEquals": {
+                  "aws:SourceArn": "${data.aws_ssm_parameter.accounts_sns_topic_arn.value}"
+              }
+              }
           }
-          }
-      }
       ]
   }
   POLICY
@@ -100,6 +116,13 @@ resource "aws_sqs_queue_policy" "person_queue_policy" {
 
 resource "aws_sns_topic_subscription" "person_queue_subscribe_to_tenure_sns" {
   topic_arn            = data.aws_ssm_parameter.tenure_sns_topic_arn.value
+  protocol             = "sqs"
+  endpoint             = aws_sqs_queue.person_queue.arn
+  raw_message_delivery = true
+}
+
+resource "aws_sns_topic_subscription" "person_queue_subscribe_to_accounts_sns" {
+  topic_arn            = data.aws_ssm_parameter.accounts_sns_topic_arn.value
   protocol             = "sqs"
   endpoint             = aws_sqs_queue.person_queue.arn
   raw_message_delivery = true
