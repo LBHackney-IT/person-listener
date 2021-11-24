@@ -1,3 +1,4 @@
+using Hackney.Core.Testing.DynamoDb;
 using PersonListener.Tests.E2ETests.Fixtures;
 using PersonListener.Tests.E2ETests.Steps;
 using System;
@@ -10,18 +11,18 @@ namespace PersonListener.Tests.E2ETests.Stories
         AsA = "SQS Tenure Listener",
         IWant = "a function to process the RemovePersonFromTenure message",
         SoThat = "The tenure and person details are set correctly")]
-    [Collection("DynamoDb collection")]
+    [Collection("AppTest collection")]
     public class RemovePersonFromTenureTests : IDisposable
     {
-        private readonly DynamoDbFixture _dbFixture;
+        private readonly IDynamoDbFixture _dbFixture;
         private readonly PersonFixture _personFixture;
         private readonly TenureApiFixture _tenureApiFixture;
 
         private readonly PersonRemovedFromTenureStep _steps;
 
-        public RemovePersonFromTenureTests(DynamoDbFixture dbFixture)
+        public RemovePersonFromTenureTests(MockApplicationFactory appFactory)
         {
-            _dbFixture = dbFixture;
+            _dbFixture = appFactory.DynamoDbFixture;
             _personFixture = new PersonFixture(_dbFixture.DynamoDbContext);
             _tenureApiFixture = new TenureApiFixture();
             _steps = new PersonRemovedFromTenureStep();

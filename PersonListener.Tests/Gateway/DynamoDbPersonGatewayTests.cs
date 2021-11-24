@@ -1,6 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using FluentAssertions;
+using Hackney.Core.Testing.DynamoDb;
+using Hackney.Core.Testing.Shared;
 using Hackney.Shared.Person;
 using Hackney.Shared.Person.Factories;
 using Hackney.Shared.Person.Infrastructure;
@@ -8,25 +10,23 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using PersonListener.Gateway;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace PersonListener.Tests.Gateway
 {
-    [Collection("DynamoDb collection")]
+    [Collection("AppTest collection")]
     public class DynamoDbPersonGatewayTests : IDisposable
     {
         private readonly Fixture _fixture = new Fixture();
         private readonly Mock<ILogger<DynamoDbPersonGateway>> _logger;
         private readonly DynamoDbPersonGateway _classUnderTest;
-        private DynamoDbFixture _dbTestFixture;
-        private IDynamoDBContext DynamoDb => _dbTestFixture.DynamoDbContext;
-        private readonly List<Action> _cleanup = new List<Action>();
+        private readonly IDynamoDbFixture _dbFixture;
+        private IDynamoDBContext DynamoDb => _dbFixture.DynamoDbContext;
 
-        public DynamoDbPersonGatewayTests(DynamoDbFixture dbTestFixture)
+        public DynamoDbPersonGatewayTests(MockApplicationFactory appFactory)
         {
-            _dbTestFixture = dbTestFixture;
+            _dbFixture = appFactory.DynamoDbFixture;
             _logger = new Mock<ILogger<DynamoDbPersonGateway>>();
             _classUnderTest = new DynamoDbPersonGateway(DynamoDb, _logger.Object);
         }
@@ -42,23 +42,13 @@ namespace PersonListener.Tests.Gateway
         {
             if (disposing && !_disposed)
             {
-                foreach (var action in _cleanup)
-                    action();
-
-                if (_dbTestFixture != null)
-                {
-                    _dbTestFixture.Dispose();
-                    _dbTestFixture = null;
-                }
-
                 _disposed = true;
             }
         }
 
         private async Task InsertDatatoDynamoDB(Person entity)
         {
-            await DynamoDb.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
-            _cleanup.Add(async () => await DynamoDb.DeleteAsync<PersonDbEntity>(entity.Id).ConfigureAwait(false));
+            await _dbFixture.SaveEntityAsync(entity.ToDatabase()).ConfigureAwait(false);
         }
 
         private Person ConstructPerson()
