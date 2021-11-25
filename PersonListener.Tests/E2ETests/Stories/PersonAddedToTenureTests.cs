@@ -1,3 +1,4 @@
+using Hackney.Core.Testing.DynamoDb;
 using PersonListener.Tests.E2ETests.Fixtures;
 using PersonListener.Tests.E2ETests.Steps;
 using System;
@@ -10,18 +11,18 @@ namespace PersonListener.Tests.E2ETests.Stories
         AsA = "SQS Entity Listener",
         IWant = "a function to process the PersonAddedToTenure message",
         SoThat = "The correct details are set on the person")]
-    [Collection("DynamoDb collection")]
+    [Collection("AppTest collection")]
     public class PersonAddedToTenureTests : IDisposable
     {
-        private readonly DynamoDbFixture _dbFixture;
+        private readonly IDynamoDbFixture _dbFixture;
         private readonly PersonFixture _personFixture;
         private readonly TenureApiFixture _tenureApiFixture;
 
         private readonly PersonAddedToTenureUseCaseSteps _steps;
 
-        public PersonAddedToTenureTests(DynamoDbFixture dbFixture)
+        public PersonAddedToTenureTests(MockApplicationFactory appFactory)
         {
-            _dbFixture = dbFixture;
+            _dbFixture = appFactory.DynamoDbFixture;
 
             _personFixture = new PersonFixture(_dbFixture.DynamoDbContext);
             _tenureApiFixture = new TenureApiFixture();
