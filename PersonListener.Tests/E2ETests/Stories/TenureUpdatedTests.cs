@@ -94,8 +94,8 @@ namespace PersonListener.Tests.E2ETests.Stories
                     _tenureApiFixture.ResponseObject.HouseholdMembers.First().Id))
                 .When(w => _steps.WhenTheFunctionIsTriggered(tenureId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
-                .Then(t => _steps.ThenAnAggregatedPersonNotFoundExceptionIsThrown(
-                    _tenureApiFixture.ResponseObject.HouseholdMembers.Select(x => x.Id)))
+                .Then(t => _steps.ThenAPersonNotFoundExceptionIsThrown(
+                    _tenureApiFixture.ResponseObject.HouseholdMembers.Select(x => x.Id).First()))
                 .BDDfy();
         }
     }

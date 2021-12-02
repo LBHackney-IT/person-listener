@@ -41,21 +41,16 @@ namespace PersonListener.UseCase
                 return;
 
             // #3 - For each Household member update the tenure info on the person record
-            var tasks = new List<Task>();
             var updatedPersons = new List<Person>();
             foreach (var hm in tenure.HouseholdMembers)
-                tasks.Add(UpdatePersonRecord(tenure, hm, updatedPersons));
-            Task.WaitAll(tasks.ToArray());
+                updatedPersons.Add(await GetAndUpdatePersonRecord(tenure, hm).ConfigureAwait(false));
 
-            // #4 - Save all updated person records
-            tasks.Clear();
+            // #4 - Save the updated person
             foreach (var p in updatedPersons)
-                tasks.Add(_gateway.SavePersonAsync(p));
-
-            Task.WaitAll(tasks.ToArray());
+                await _gateway.SavePersonAsync(p).ConfigureAwait(false);
         }
 
-        private async Task UpdatePersonRecord(TenureResponseObject tenure, HouseholdMembers hm, List<Person> updatedRecords)
+        private async Task<Person> GetAndUpdatePersonRecord(TenureResponseObject tenure, HouseholdMembers hm)
         {
             var thisPerson = await _gateway.GetPersonByIdAsync(hm.Id).ConfigureAwait(false);
             if (thisPerson is null) throw new EntityNotFoundException<Person>(hm.Id);
@@ -72,7 +67,7 @@ namespace PersonListener.UseCase
             personTenure.Type = tenure.TenureType.Description;
             personTenure.Uprn = tenure.TenuredAsset.Uprn;
 
-            updatedRecords.Add(thisPerson);
+            return thisPerson;
         }
     }
 }
