@@ -1,3 +1,4 @@
+using Hackney.Core.Http;
 using Hackney.Core.Logging;
 using Hackney.Shared.Tenure.Boundary.Response;
 using PersonListener.Gateway.Interfaces;
