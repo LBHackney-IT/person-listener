@@ -1,3 +1,4 @@
+using Hackney.Core.Http;
 using Hackney.Core.Logging;
 using PersonListener.Domain.Account;
 using PersonListener.Gateway.Interfaces;

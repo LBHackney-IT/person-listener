@@ -142,10 +142,13 @@ namespace PersonListener.Tests.UseCase
         {
             _mockTenureApi.Setup(x => x.GetTenureInfoByIdAsync(_message.EntityId, _message.CorrelationId))
                                        .ReturnsAsync(_tenure);
+            var persons = SetupPersonTenures();
+            _mockGateway.Setup(x => x.GetPersonByIdAsync(persons[1].Id)).ReturnsAsync((Person) null);
+
             Func<Task> func = async () => await _sut.ProcessMessageAsync(_message).ConfigureAwait(false);
             func.Should().Throw<EntityNotFoundException<Person>>();
 
-            _mockGateway.Verify(x => x.GetPersonByIdAsync(It.IsAny<Guid>()), Times.Exactly(3));
+            _mockGateway.Verify(x => x.GetPersonByIdAsync(It.IsAny<Guid>()), Times.Exactly(2));
             _mockGateway.Verify(x => x.SavePersonAsync(It.IsAny<Person>()), Times.Never());
         }
 

@@ -1,3 +1,4 @@
+using Hackney.Core.Testing.DynamoDb;
 using PersonListener.Tests.E2ETests.Fixtures;
 using PersonListener.Tests.E2ETests.Steps;
 using System;
@@ -11,18 +12,18 @@ namespace PersonListener.Tests.E2ETests.Stories
         AsA = "SQS Entity Listener",
         IWant = "a function to process the TenureUpdated message",
         SoThat = "The correct details are set on the appropriate persons")]
-    [Collection("DynamoDb collection")]
+    [Collection("AppTest collection")]
     public class TenureUpdatedTests : IDisposable
     {
-        private readonly DynamoDbFixture _dbFixture;
+        private readonly IDynamoDbFixture _dbFixture;
         private readonly PersonFixture _personFixture;
         private readonly TenureApiFixture _tenureApiFixture;
 
         private readonly TenureUpdatedUseCaseSteps _steps;
 
-        public TenureUpdatedTests(DynamoDbFixture dbFixture)
+        public TenureUpdatedTests(MockApplicationFactory appFactory)
         {
-            _dbFixture = dbFixture;
+            _dbFixture = appFactory.DynamoDbFixture;
 
             _personFixture = new PersonFixture(_dbFixture.DynamoDbContext);
             _tenureApiFixture = new TenureApiFixture();
@@ -93,8 +94,8 @@ namespace PersonListener.Tests.E2ETests.Stories
                     _tenureApiFixture.ResponseObject.HouseholdMembers.First().Id))
                 .When(w => _steps.WhenTheFunctionIsTriggered(tenureId))
                 .Then(t => _steps.ThenTheCorrelationIdWasUsedInTheApiCall(_tenureApiFixture.ReceivedCorrelationIds))
-                .Then(t => _steps.ThenAnAggregatedPersonNotFoundExceptionIsThrown(
-                    _tenureApiFixture.ResponseObject.HouseholdMembers.Select(x => x.Id)))
+                .Then(t => _steps.ThenAPersonNotFoundExceptionIsThrown(
+                    _tenureApiFixture.ResponseObject.HouseholdMembers.Select(x => x.Id).First()))
                 .BDDfy();
         }
     }

@@ -1,5 +1,6 @@
 using AutoFixture;
 using FluentAssertions;
+using Hackney.Core.Http;
 using Hackney.Shared.Tenure.Boundary.Response;
 using Moq;
 using PersonListener.Gateway;
