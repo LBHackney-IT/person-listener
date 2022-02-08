@@ -173,9 +173,13 @@ workflows:
           context: api-nuget-token-context
       - build-and-test:
           context: api-nuget-token-context
-      - debug
+      - debug:
+          requires:
+           - build-and-test
       - test:
           context: api-nuget-token-context
+          requires:
+          - build-and-test
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
