@@ -111,7 +111,7 @@ jobs:
       - checkout
       - run:
           name: debug
-          command: dotnet test PersonListener.dll --filter OneSpecificTest -v diag --blame-crash
+          command: dotnet test ./out/PersonListener.dll --filter OneSpecificTest -v diag --blame-crash
   test:
     executor: docker-python
     steps:
