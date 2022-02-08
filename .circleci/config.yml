@@ -106,6 +106,9 @@ jobs:
           name: build
           command: docker-compose build person-listener-test
       - run:
+          name: debug
+          command: dotnet test PersonListener.dll --filter OneSpecificTest -v diag --blame-crash
+      - run:
           name: Run tests
           command: docker-compose run person-listener-test
   assume-role-development:
