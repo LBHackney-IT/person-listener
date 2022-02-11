@@ -105,20 +105,7 @@ jobs:
       - run:
           name: build
           command: docker-compose build person-listener-test
-  #debug:
-  #  executor: docker-dotnet
-  #  steps:
-  #    - checkout
-  #    - run:
-  #        name: debug
-  #        command: |
-  #            dir
-  #            dotnet test ./out/PersonListener.dll --filter OneSpecificTest -v diag --blame-crash
-  #test:
-  #  executor: docker-python
-  #  steps:
-  #    - checkout
-  #    - setup_remote_docker
+
       - run:
           name: Run tests
           command: docker-compose run person-listener-test
@@ -175,13 +162,6 @@ workflows:
           context: api-nuget-token-context
       - build-and-test:
           context: api-nuget-token-context
-      #- debug:
-      #    requires:
-      #     - build-and-test
-      #- test:
-      #    context: api-nuget-token-context
-      #    requires:
-      #    - build-and-test
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
