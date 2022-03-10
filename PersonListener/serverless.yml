@@ -8,7 +8,6 @@ provider:
     apiGateway: true
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
-  account: ${opt:account}
   region: eu-west-2
 
 package:
@@ -29,8 +28,8 @@ functions:
     events:
       # Specify the parameter containing the queue arn used to trigget the lambda function here
       # This will have been defined in the terraform configuration
-      - sqs: ${ssm:/sqs-queue/${self:provider.stage}/person/arn} 
-      
+      - sqs: ${ssm:/sqs-queue/${self:provider.stage}/person/arn}
+
 resources:
   Resources:
     lambdaExecutionRole:
@@ -49,7 +48,7 @@ resources:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
-        Policies:          
+        Policies:
           - PolicyName: manageLogs
             PolicyDocument:
               Version: '2012-10-17'
