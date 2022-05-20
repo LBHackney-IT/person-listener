@@ -27,6 +27,7 @@ services:
       dockerfile: PersonListener.Tests/Dockerfile
       args:
         - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
+        - SONAR_TOKEN=${SONAR_TOKEN}
     environment:
       - ENVIRONMENT=LocalDevelopment
       - DynamoDb_LocalMode=true
