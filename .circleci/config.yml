@@ -250,7 +250,7 @@ workflows:
           filters:
             branches:
               only: master
-       - terraform-compliance-development:
+      - terraform-compliance-development:
           requires:
             - terraform-init-and-plan-development
           filters:
