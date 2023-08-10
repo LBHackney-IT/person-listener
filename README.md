@@ -1,6 +1,6 @@
-# LBH Base Listener
+# LBH Person Listener
 
-Base Listener is a boilerplate template application for creating for new Listener applications for LBH
+Listener application implementing an AWS function to receive messages that will result in additional processing within the person domain
 
 ## Stack
 
