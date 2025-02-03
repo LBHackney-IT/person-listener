@@ -43,13 +43,7 @@ namespace PersonListener.Tests
             if (disposing && !_disposed)
             {
                 if (DynamoDbFixture != null)
-                {
-                    try{
-                        DynamoDbFixture.Dispose();
-                    } catch (Exception ex) {
-                        Console.WriteLine($"Error disposing DynamoDbFixture: {ex.Message}");
-                    }
-                }
+                    DynamoDbFixture.Dispose();
 
                 if (null != _host)
                 {
