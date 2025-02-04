@@ -21,7 +21,7 @@
     <PackageReference Include="DeepCloner" Version="0.10.2" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Hackney.Core.Http" Version="1.63.0" />
-    <PackageReference Include="Hackney.Core.Testing.DynamoDb" Version="1.86.0-feat-error-handl0001" />
+    <PackageReference Include="Hackney.Core.Testing.DynamoDb" Version="1.86.0" />
     <PackageReference Include="Hackney.Core.Testing.Shared" Version="1.54.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
