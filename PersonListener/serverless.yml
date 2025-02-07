@@ -130,6 +130,8 @@ resources:
 custom:
   vpc:
     development:
+      securityGroupIds:
+        - sg-096cc425cd4b8803a
       subnetIds:
         - subnet-0140d06fb84fdb547
         - subnet-05ce390ba88c42bfd
