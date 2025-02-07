@@ -137,8 +137,8 @@ custom:
       securityGroupIds:
         - sg-087896a42ab45a21f
       subnetIds:
-        - subnet-06d3de1bd9181b0d7
-        - subnet-0ed7d7713d1127656
+        - subnet-0ea0020a44b98a2ca
+        - subnet-0743d86e9b362fa38
     production:
       securityGroupIds:
         - sg-0d35b31c1d389a4db
