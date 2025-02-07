@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
   sonarcloud: sonarsource/sonarcloud@2.0.0
+  node: circleci/node@6.3.0
 
 executors:
   docker-python:
@@ -100,6 +101,21 @@ commands:
           root: *workspace_root
           paths:
             - .aws
+  terraform-preview:
+    description: "Gives a preview for Terraform configuration changes."
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+            terraform plan
+          name: terraform preview
   deploy-lambda:
     description: "Deploys via Serverless"
     parameters:
@@ -109,11 +125,7 @@ commands:
       - *attach_workspace
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_20.x | bash -
-            apt-get update && apt-get install -y nodejs
+      - node/install
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
@@ -211,6 +223,21 @@ jobs:
     steps:
       - terraform-apply:
           environment: "production"
+  preview-development-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "development"
+  preview-staging-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "staging"
+  preview-production-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "production"
   deploy-to-development:
     executor: docker-dotnet
     steps:
@@ -228,14 +255,68 @@ jobs:
           stage: "production"
 
 workflows:
-  check-and-deploy-development:
+  feature:
     jobs:
       - check-code-formatting:
           context: api-nuget-token-context
+          filters:
+            branches:
+              ignore:
+                - master
+                - release
       - build-and-test:
           context:
             - api-nuget-token-context
             - SonarCloud
+          filters:
+            branches:
+              ignore:
+                - master
+                - release
+      - assume-role-development:
+          context: api-assume-role-housing-development-context
+          filters:
+            branches:
+              ignore:
+                - master
+                - release
+      - preview-development-terraform:
+          requires:
+            - assume-role-development
+      - assume-role-staging:
+          context: api-assume-role-housing-staging-context
+          filters:
+            branches:
+              ignore:
+                - master
+                - release
+      - preview-staging-terraform:
+          requires:
+            - assume-role-staging
+      - assume-role-production:
+          context: api-assume-role-housing-production-context
+          filters:
+            branches:
+              ignore:
+                - master
+                - release
+      - preview-production-terraform:
+          requires:
+            - assume-role-production
+  development:
+    jobs:
+      - check-code-formatting:
+          context: api-nuget-token-context
+          filters:
+            branches:
+              only: master
+      - build-and-test:
+          context:
+            - api-nuget-token-context
+            - SonarCloud
+          filters:
+            branches:
+              only: master
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
@@ -255,14 +336,14 @@ workflows:
       - deploy-to-development:
           context:
             - api-nuget-token-context
-            - "Serverless Framework" 
+            - "Serverless Framework"
           requires:
             - terraform-apply-development
           filters:
             branches:
               only: master
-  check-and-deploy-staging-and-production:
-      jobs:
+  staging-and-production:
+    jobs:
       - check-code-formatting:
           context: api-nuget-token-context
           filters:
@@ -278,10 +359,10 @@ workflows:
       - assume-role-staging:
           context: api-assume-role-housing-staging-context
           requires:
-              - build-and-test
+            - build-and-test
           filters:
-             branches:
-               only: release
+            branches:
+              only: release
       - terraform-init-and-plan-staging:
           requires:
             - assume-role-staging
@@ -303,7 +384,7 @@ workflows:
       - deploy-to-staging:
           context:
             - api-nuget-token-context
-            - "Serverless Framework" 
+            - "Serverless Framework"
           requires:
             - terraform-apply-staging
           filters:
@@ -319,10 +400,10 @@ workflows:
       - assume-role-production:
           context: api-assume-role-housing-production-context
           requires:
-              - permit-production-terraform-release
+            - permit-production-terraform-release
           filters:
-             branches:
-               only: release
+            branches:
+              only: release
       - terraform-init-and-plan-production:
           requires:
             - assume-role-production
