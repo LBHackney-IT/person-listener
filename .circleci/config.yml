@@ -163,6 +163,12 @@ jobs:
       - run:
           name: Run tests
           command: docker-compose run person-listener-test
+      - run:
+          name: Report
+          command: |
+            mkdir coverage
+            docker cp $(docker ps -aqf "name=person-listener-test"):/app/coverage ./
+            sed -i "s|/app/|$(pwd)/|g" coverage/*/coverage.opencover.xml
   assume-role-development:
     executor: docker-python
     steps:
