@@ -10,7 +10,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN dotnet restore
-
 RUN dotnet build
+
 ENTRYPOINT ["dotnet", "test", "--collect", "XPlat Code Coverage;Format=opencover", "--results-directory", "./coverage"]
