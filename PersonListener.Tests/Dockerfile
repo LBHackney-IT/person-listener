@@ -10,8 +10,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN dotnet restore ./PersonListener/PersonListener.csproj
-RUN dotnet restore ./PersonListener.Tests/PersonListener.Tests.csproj
+RUN dotnet restore
 
 RUN dotnet build -c Release -o out PersonListener/PersonListener.csproj
 RUN dotnet build -c debug -o out PersonListener.Tests/PersonListener.Tests.csproj
