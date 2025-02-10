@@ -8,7 +8,6 @@ ENV LBHPACKAGESTOKEN=$LBHPACKAGESTOKEN
 
 WORKDIR /app
 
-COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
 COPY . .
 
 RUN dotnet restore ./PersonListener/PersonListener.csproj
