@@ -24,4 +24,4 @@ COPY . .
 RUN dotnet build -c Release -o out PersonListener/PersonListener.csproj
 RUN dotnet build -c debug -o out PersonListener.Tests/PersonListener.Tests.csproj
 
-CMD dotnet test
+ENTRYPOINT ["dotnet", "test", "--collect", "XPlat Code Coverage;Format=opencover", "--results-directory", "./coverage"]
