@@ -8,15 +8,11 @@ ENV LBHPACKAGESTOKEN=$LBHPACKAGESTOKEN
 
 WORKDIR /app
 
-COPY ./PersonListener.sln ./
-COPY ./PersonListener/PersonListener.csproj ./PersonListener/
-COPY ./PersonListener.Tests/PersonListener.Tests.csproj ./PersonListener.Tests/
 COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
+COPY . .
 
 RUN dotnet restore ./PersonListener/PersonListener.csproj
 RUN dotnet restore ./PersonListener.Tests/PersonListener.Tests.csproj
-
-COPY . .
 
 RUN dotnet build -c Release -o out PersonListener/PersonListener.csproj
 RUN dotnet build -c debug -o out PersonListener.Tests/PersonListener.Tests.csproj
