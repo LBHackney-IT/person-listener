@@ -12,7 +12,5 @@ COPY . .
 
 RUN dotnet restore
 
-RUN dotnet build -c Release -o out PersonListener/PersonListener.csproj
-RUN dotnet build -c debug -o out PersonListener.Tests/PersonListener.Tests.csproj
-
+RUN dotnet build
 ENTRYPOINT ["dotnet", "test", "--collect", "XPlat Code Coverage;Format=opencover", "--results-directory", "./coverage"]
