@@ -16,6 +16,11 @@ Person listener does the above-described table data copying plumbing behind the 
 ## Stack
 - .NET Core as a web framework.
 - xUnit as a test framework.
+- Docker for tests for ease of running them within pipeline.
+- Hosted as an AWS Serverless Lambda.
+- Deployed to AWS CloudFormation using Serverless Framework.
+- Remaining related infrastructure deployed using Terraform.
+- Code QA checks & deployment is done within CircleCI pipelines.
 
 ## Setup
 See setup instructions within the setup readme: [link](https://github.com/LBHackney-IT/person-listener/blob/master/docs/Setup.md).
