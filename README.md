@@ -23,6 +23,5 @@ See setup instructions within the setup readme: [link](https://github.com/LBHack
 ## Contributing
 See contributing instructions within the contribution readme: [link](https://github.com/LBHackney-IT/person-listener/blob/master/docs/Contributing.md).
 
-
 ## Ownership
-**Housing Products Team**, [@LBHackney-IT/teams/housing-products](https://github.com/orgs/LBHackney-IT/teams/housing-products).
+**Housing Products Team**, [@LBHackney-IT/housing-products](https://github.com/orgs/LBHackney-IT/teams/housing-products).
