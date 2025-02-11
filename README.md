@@ -14,7 +14,6 @@ person DynamoDB record needing to be updated whenever there are any changes to t
 Person listener does the above-described table data copying plumbing behind the scenes to ensure that these linked up tables are in sync.
 
 ## Stack
-
 - .NET Core as a web framework.
 - xUnit as a test framework.
 
@@ -36,6 +35,3 @@ See contributing instructions within the contribution readme: [link](https://git
 ### Other Contacts
 
 - **Rashmi Shetty**, Product Owner at London Borough of Hackney (rashmi.shetty@hackney.gov.uk)
-
-[docker-download]: https://www.docker.com/products/docker-desktop
-[AWS-CLI]: https://aws.amazon.com/cli/
