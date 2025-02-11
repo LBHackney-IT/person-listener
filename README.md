@@ -24,14 +24,5 @@ See setup instructions within the setup readme: [link](https://github.com/LBHack
 See contributing instructions within the contribution readme: [link](https://github.com/LBHackney-IT/person-listener/blob/master/docs/Contributing.md).
 
 
-## Contacts
-
-### Active Maintainers
-
-- **Selwyn Preston**, Lead Developer at London Borough of Hackney (selwyn.preston@hackney.gov.uk)
-- **Mirela Georgieva**, Lead Developer at London Borough of Hackney (mirela.georgieva@hackney.gov.uk)
-- **Matt Keyworth**, Lead Developer at London Borough of Hackney (matthew.keyworth@hackney.gov.uk)
-
-### Other Contacts
-
-- **Rashmi Shetty**, Product Owner at London Borough of Hackney (rashmi.shetty@hackney.gov.uk)
+## Ownership
+**Housing Products Team**, [@LBHackney-IT/teams/housing-products](https://github.com/orgs/LBHackney-IT/teams/housing-products).
