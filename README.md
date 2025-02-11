@@ -1,6 +1,5 @@
 # Person Listener
-
-Listener application implementing an AWS function to receive messages that will result in additional processing within the person domain.
+Event-driven, AWS Lambda hosted application used to keep Person DynamoDB record details up-to-date.
 
 Whenever a person record gets assigned / removed to any given tenancy agreement record, this ends up firing off an event of a
 corresponding type. This listener picks this event up, and links up the tenancy agreement record by attaching / removing it to/from
