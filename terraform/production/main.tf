@@ -68,7 +68,8 @@ resource "aws_sqs_queue" "person_dead_letter_queue" {
   name                              = "persondeadletterqueue.fifo"
   fifo_queue                        = true
   content_based_deduplication       = true
-  kms_master_key_id                 = "alias/housing-production-cmk"
+  # Changed to AWS-managed key for DR (original custom key not available)
+  kms_master_key_id                 = "alias/aws/sqs"
   kms_data_key_reuse_period_seconds = 300
 }
 
@@ -79,7 +80,8 @@ resource "aws_sqs_queue" "person_queue" {
   name                              = "personqueue.fifo"
   fifo_queue                        = true
   content_based_deduplication       = true
-  kms_master_key_id                 = "alias/housing-production-cmk" # This is a custom key
+  # Changed to AWS-managed key for DR (original custom key not available)
+  kms_master_key_id                 = "alias/aws/sqs"
   kms_data_key_reuse_period_seconds = 300
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.person_dead_letter_queue.arn,
