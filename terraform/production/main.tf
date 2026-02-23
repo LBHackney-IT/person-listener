@@ -53,13 +53,14 @@ module "person_listener_sg" {
 # This is the parameter containing the arn of the topic to which we want to subscribe
 # This will have been created by the service the generates the events in which we are interested
 
-data "aws_ssm_parameter" "tenure_sns_topic_arn" {
-  name = "/sns-topic/production/tenure/arn"
-}
-
-data "aws_ssm_parameter" "accounts_sns_topic_arn" {
-  name = "/sns-topic/production/accounts/arn"
-}
+# COMMENTED OUT FOR DR TESTING - SNS topics not needed when sending messages directly to SQS
+# data "aws_ssm_parameter" "tenure_sns_topic_arn" {
+#   name = "/sns-topic/production/tenure/arn"
+# }
+# 
+# data "aws_ssm_parameter" "accounts_sns_topic_arn" {
+#   name = "/sns-topic/production/accounts/arn"
+# }
 
 # This is the definition of the dead letter queue used whem message processsing fails for a given message
 
@@ -87,6 +88,7 @@ resource "aws_sqs_queue" "person_queue" {
 }
 
 # This is the AWS policy that allows the topic to forward an event to the queue declared above
+# SIMPLIFIED FOR DR TESTING - Allows direct sends to SQS without SNS restriction
 
 resource "aws_sqs_queue_policy" "person_queue_policy" {
   queue_url = aws_sqs_queue.person_queue.id
@@ -96,28 +98,10 @@ resource "aws_sqs_queue_policy" "person_queue_policy" {
       "Id": "sqspolicy",
       "Statement": [
           {
-              "Sid": "First",
               "Effect": "Allow",
               "Principal": "*",
               "Action": "sqs:SendMessage",
-              "Resource": "${aws_sqs_queue.person_queue.arn}",
-              "Condition": {
-              "ArnEquals": {
-                  "aws:SourceArn": "${data.aws_ssm_parameter.tenure_sns_topic_arn.value}"
-              }
-              }
-          },          
-          {
-              "Sid": "Second",
-              "Effect": "Allow",
-              "Principal": "*",
-              "Action": "sqs:SendMessage",
-              "Resource": "${aws_sqs_queue.person_queue.arn}",
-              "Condition": {
-              "ArnEquals": {
-                  "aws:SourceArn": "${data.aws_ssm_parameter.accounts_sns_topic_arn.value}"
-              }
-              }
+              "Resource": "${aws_sqs_queue.person_queue.arn}"
           }
       ]
   }
@@ -125,20 +109,21 @@ resource "aws_sqs_queue_policy" "person_queue_policy" {
 }
 
 # This is the subscription definition that tells the topic which queue to use
+# COMMENTED OUT FOR DR TESTING
 
-resource "aws_sns_topic_subscription" "person_queue_subscribe_to_tenure_sns" {
-  topic_arn            = data.aws_ssm_parameter.tenure_sns_topic_arn.value
-  protocol             = "sqs"
-  endpoint             = aws_sqs_queue.person_queue.arn
-  raw_message_delivery = true
-}
-
-resource "aws_sns_topic_subscription" "person_queue_subscribe_to_accounts_sns" {
-  topic_arn            = data.aws_ssm_parameter.accounts_sns_topic_arn.value
-  protocol             = "sqs"
-  endpoint             = aws_sqs_queue.person_queue.arn
-  raw_message_delivery = true
-}
+# resource "aws_sns_topic_subscription" "person_queue_subscribe_to_tenure_sns" {
+#   topic_arn            = data.aws_ssm_parameter.tenure_sns_topic_arn.value
+#   protocol             = "sqs"
+#   endpoint             = aws_sqs_queue.person_queue.arn
+#   raw_message_delivery = true
+# }
+# 
+# resource "aws_sns_topic_subscription" "person_queue_subscribe_to_accounts_sns" {
+#   topic_arn            = data.aws_ssm_parameter.accounts_sns_topic_arn.value
+#   protocol             = "sqs"
+#   endpoint             = aws_sqs_queue.person_queue.arn
+#   raw_message_delivery = true
+# }
 
 # This creates an AWS parameter with arn of the queue that will then be used within the Serverless.yml
 # to specify the queue that will trigger the lambda function.
@@ -149,10 +134,11 @@ resource "aws_ssm_parameter" "person_sqs_queue_arn" {
   value = aws_sqs_queue.person_queue.arn
 }
 
-module "person_listener_cw_dashboard" {
-  source                     = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/dashboards/listener-dashboard"
-  environment_name           = var.environment_name
-  listener_name              = "person-listener"
-  sqs_queue_name             = aws_sqs_queue.person_queue.name
-  sqs_dead_letter_queue_name = aws_sqs_queue.person_dead_letter_queue.name
-}
+# COMMENTED OUT FOR DR TESTING
+# module "person_listener_cw_dashboard" {
+#   source                     = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/dashboards/listener-dashboard"
+#   environment_name           = var.environment_name
+#   listener_name              = "person-listener"
+#   sqs_queue_name             = aws_sqs_queue.person_queue.name
+#   sqs_dead_letter_queue_name = aws_sqs_queue.person_dead_letter_queue.name
+# }

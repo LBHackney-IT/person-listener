@@ -134,10 +134,10 @@ custom:
         - subnet-0743d86e9b362fa38
     production:
       securityGroupIds:
-        - sg-0d35b31c1d389a4db
+        - sg-08b1acb08bf85654b
       subnetIds:
-        - subnet-0beb266003a56ca82
-        - subnet-06a697d86a9b6ed01
+        - subnet-05e595c59b7d6c8df
+        - subnet-0e6bc9b4ac24493cc
     pre-production:
       securityGroupIds:
         - sg-042efccabaf286060
