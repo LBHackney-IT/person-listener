@@ -39,7 +39,7 @@ terraform {
 
 data "aws_vpc" "housing_production_vpc" {
   tags = {
-    Name = "housing-prod"
+    Name = "disaster-recovery-prod"
   }
 }
 
