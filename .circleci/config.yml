@@ -56,7 +56,7 @@ commands:
           name: plan
           command: |
             cd ./terraform/<<parameters.environment>>/
-            terraform plan -out=plan.out
+            terraform plan -destroy -out=plan.out
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -139,7 +139,7 @@ commands:
           name: Deploy lambda
           command: |
             cd ./PersonListener/
-            sls deploy --stage <<parameters.stage>> --conceal
+            sls remove --stage <<parameters.stage>>
 
 jobs:
   check-code-formatting:
