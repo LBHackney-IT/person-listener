@@ -62,53 +62,54 @@ module "person_listener_sg" {
 #   name = "/sns-topic/production/accounts/arn"
 # }
 
-# This is the definition of the dead letter queue used whem message processsing fails for a given message
-
-resource "aws_sqs_queue" "person_dead_letter_queue" {
-  name                              = "persondeadletterqueue.fifo"
-  fifo_queue                        = true
-  content_based_deduplication       = true
-  # Changed to AWS-managed key for DR (original custom key not available)
-  kms_master_key_id                 = "alias/aws/sqs"
-  kms_data_key_reuse_period_seconds = 300
-}
-
-# This is the queue  which will receive the events published to the topic listed above
-# This is what the listener lambda function will get triggered by.
-
-resource "aws_sqs_queue" "person_queue" {
-  name                              = "personqueue.fifo"
-  fifo_queue                        = true
-  content_based_deduplication       = true
-  # Changed to AWS-managed key for DR (original custom key not available)
-  kms_master_key_id                 = "alias/aws/sqs"
-  kms_data_key_reuse_period_seconds = 300
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.person_dead_letter_queue.arn,
-    maxReceiveCount     = 3 # Messages that fail processing are retried twice before being moved to the dead letter queue
-  })
-}
-
-# This is the AWS policy that allows the topic to forward an event to the queue declared above
-# SIMPLIFIED FOR DR TESTING - Allows direct sends to SQS without SNS restriction
-
-resource "aws_sqs_queue_policy" "person_queue_policy" {
-  queue_url = aws_sqs_queue.person_queue.id
-  policy    = <<POLICY
-  {
-      "Version": "2012-10-17",
-      "Id": "sqspolicy",
-      "Statement": [
-          {
-              "Effect": "Allow",
-              "Principal": "*",
-              "Action": "sqs:SendMessage",
-              "Resource": "${aws_sqs_queue.person_queue.arn}"
-          }
-      ]
-  }
-  POLICY
-}
+# COMMENTED OUT FOR TEARDOWN - SQS queues already deleted
+# # This is the definition of the dead letter queue used whem message processsing fails for a given message
+# 
+# resource "aws_sqs_queue" "person_dead_letter_queue" {
+#   name                              = "persondeadletterqueue.fifo"
+#   fifo_queue                        = true
+#   content_based_deduplication       = true
+#   # Changed to AWS-managed key for DR (original custom key not available)
+#   kms_master_key_id                 = "alias/aws/sqs"
+#   kms_data_key_reuse_period_seconds = 300
+# }
+# 
+# # This is the queue  which will receive the events published to the topic listed above
+# # This is what the listener lambda function will get triggered by.
+# 
+# resource "aws_sqs_queue" "person_queue" {
+#   name                              = "personqueue.fifo"
+#   fifo_queue                        = true
+#   content_based_deduplication       = true
+#   # Changed to AWS-managed key for DR (original custom key not available)
+#   kms_master_key_id                 = "alias/aws/sqs"
+#   kms_data_key_reuse_period_seconds = 300
+#   redrive_policy = jsonencode({
+#     deadLetterTargetArn = aws_sqs_queue.person_dead_letter_queue.arn,
+#     maxReceiveCount     = 3 # Messages that fail processing are retried twice before being moved to the dead letter queue
+#   })
+# }
+# 
+# # This is the AWS policy that allows the topic to forward an event to the queue declared above
+# # SIMPLIFIED FOR DR TESTING - Allows direct sends to SQS without SNS restriction
+# 
+# resource "aws_sqs_queue_policy" "person_queue_policy" {
+#   queue_url = aws_sqs_queue.person_queue.id
+#   policy    = <<POLICY
+#   {
+#       "Version": "2012-10-17",
+#       "Id": "sqspolicy",
+#       "Statement": [
+#           {
+#               "Effect": "Allow",
+#               "Principal": "*",
+#               "Action": "sqs:SendMessage",
+#               "Resource": "${aws_sqs_queue.person_queue.arn}"
+#           }
+#       ]
+#   }
+#   POLICY
+# }
 
 # This is the subscription definition that tells the topic which queue to use
 # COMMENTED OUT FOR DR TESTING
@@ -127,14 +128,15 @@ resource "aws_sqs_queue_policy" "person_queue_policy" {
 #   raw_message_delivery = true
 # }
 
-# This creates an AWS parameter with arn of the queue that will then be used within the Serverless.yml
-# to specify the queue that will trigger the lambda function.
-
-resource "aws_ssm_parameter" "person_sqs_queue_arn" {
-  name  = "/sqs-queue/production/person/arn"
-  type  = "String"
-  value = aws_sqs_queue.person_queue.arn
-}
+# COMMENTED OUT FOR TEARDOWN - SSM parameter already deleted or not needed
+# # This creates an AWS parameter with arn of the queue that will then be used within the Serverless.yml
+# # to specify the queue that will trigger the lambda function.
+# 
+# resource "aws_ssm_parameter" "person_sqs_queue_arn" {
+#   name  = "/sqs-queue/production/person/arn"
+#   type  = "String"
+#   value = aws_sqs_queue.person_queue.arn
+# }
 
 # COMMENTED OUT FOR DR TESTING
 # module "person_listener_cw_dashboard" {

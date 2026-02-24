@@ -137,9 +137,10 @@ commands:
             ./build.sh
       - run:
           name: Deploy lambda
+          no_output_timeout: 45m
           command: |
             cd ./PersonListener/
-            sls remove --stage <<parameters.stage>>
+            sls remove --stage <<parameters.stage>> --verbose
 
 jobs:
   check-code-formatting:
@@ -423,39 +424,21 @@ workflows:
       #       branches:
       #         only: release
       
-      - permit-production-terraform-release:
+      - permit-production-terraform-destroy:
           type: approval
-          # requires:
-          #   - deploy-to-staging
           filters:
             branches:
               only: dr-testing
       - assume-role-production:
           context: api-assume-role-disaster-recovery-context
           requires:
-            - permit-production-terraform-release
-          filters:
-            branches:
-              only: dr-testing
-      - deploy-to-production:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - assume-role-production
-          filters:
-            branches:
-              only: dr-testing
-      - permit-production-release:
-          type: approval
-          requires:
-            - deploy-to-production
+            - permit-production-terraform-destroy
           filters:
             branches:
               only: dr-testing
       - terraform-init-and-plan-production:
           requires:
-            - permit-production-release
+            - assume-role-production
           filters:
             branches:
               only: dr-testing
