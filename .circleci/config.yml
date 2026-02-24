@@ -422,6 +422,7 @@ workflows:
       #     filters:
       #       branches:
       #         only: release
+      
       - permit-production-terraform-release:
           type: approval
           # requires:
@@ -436,9 +437,25 @@ workflows:
           filters:
             branches:
               only: dr-testing
-      - terraform-init-and-plan-production:
+      - deploy-to-production:
+          context:
+            - api-nuget-token-context
+            - "Serverless Framework"
           requires:
             - assume-role-production
+          filters:
+            branches:
+              only: dr-testing
+      - permit-production-release:
+          type: approval
+          requires:
+            - deploy-to-production
+          filters:
+            branches:
+              only: dr-testing
+      - terraform-init-and-plan-production:
+          requires:
+            - permit-production-release
           filters:
             branches:
               only: dr-testing
@@ -451,22 +468,6 @@ workflows:
       - terraform-apply-production:
           requires:
             - terraform-compliance-production
-          filters:
-            branches:
-              only: dr-testing
-      - permit-production-release:
-          type: approval
-          requires:
-            - terraform-apply-production
-          filters:
-            branches:
-              only: dr-testing
-      - deploy-to-production:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - permit-production-release
           filters:
             branches:
               only: dr-testing
