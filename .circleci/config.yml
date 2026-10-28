@@ -140,23 +140,6 @@ commands:
           command: |
             cd ./PersonListener/
             sls deploy --stage <<parameters.stage>> --conceal
-  remove-lambda:
-    description: "Removes the deployed Serverless stack. Does not build or package a deployment artifact."
-    parameters:
-      stage:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - node/install
-      - run:
-          name: Install serverless CLI
-          command: npm i -g serverless
-      - run:
-          name: Remove lambda stack
-          command: |
-            cd ./PersonListener/
-            sls remove --stage <<parameters.stage>>
   terraform-plan-destroy:
     description: "Initializes terraform configuration and generates a destroy plan"
     parameters:
@@ -334,16 +317,6 @@ jobs:
     steps:
       - terraform-apply:
           environment: "pre-production"
-  deploy-to-pre-production:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "pre-production"
-  remove-lambda-pre-production:
-    executor: docker-dotnet
-    steps:
-      - remove-lambda:
-          stage: "pre-production"
   terraform-plan-destroy-pre-production:
     executor: docker-terraform
     steps:
@@ -565,26 +538,6 @@ workflows:
           requires:
             - permit-pre-production-terraform-deployment
 
-  deploy-code-pre-production:
-    jobs:
-      - build-and-test:
-          context: 
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              only: release
-      - assume-role-pre-production:
-          context: api-assume-role-housing-pre-production-context
-          requires:
-            - build-and-test
-      - deploy-to-pre-production:
-          context:
-          - api-nuget-token-context
-          - "Serverless Framework"
-          requires:
-            - assume-role-pre-production
-
   teardown-pre-production:
     jobs:
       - assume-role-pre-production:
@@ -592,17 +545,9 @@ workflows:
           filters:
             branches:
               only: feat/ssi-1369-teardown-pre-production
-      - remove-lambda-pre-production:
-          context:
-            - "Serverless Framework"
-          requires:
-            - assume-role-pre-production
-          filters:
-            branches:
-              only: feat/ssi-1369-teardown-pre-production
       - terraform-plan-destroy-pre-production:
           requires:
-            - remove-lambda-pre-production
+            - assume-role-pre-production
           filters:
             branches:
               only: feat/ssi-1369-teardown-pre-production
