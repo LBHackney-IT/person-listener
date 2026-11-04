@@ -1,4 +1,4 @@
-# Contribution
+# Contributing
 
 ## Dependencies
 
@@ -16,8 +16,6 @@ Compose service `dynamodb-database` (`amazon/dynamodb-local`) publishes that por
 docker-compose up -d dynamodb-database
 ```
 
-`person-listener` and `person-listener-test` call it at `http://dynamodb-database:8000`. A process on the host, including `dotnet test`, calls it at `http://localhost:8000`.
-
 The same port can be started without Compose. Replace the volume path with a local directory:
 
 ```sh
@@ -33,8 +31,6 @@ docker run --name dynamodb-local -p 8000:8000 -v <PUT YOUR LOCAL PATH HERE>:/dat
 ```sh
 make build && make serve
 ```
-
-Compose sets `ENVIRONMENT=LocalDevelopment`, `DynamoDb_LocalMode=true`, and `DynamoDb_LocalServiceUrl=http://dynamodb-database:8000`.
 
 `make shell` opens a shell in the `person-listener` container.
 

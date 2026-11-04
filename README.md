@@ -46,4 +46,4 @@ Person records are stored in DynamoDB. The Lambda does not call SNS.
 
 Housing product team, mmh-project-team@hackney.gov.uk.
 
-Build, run, and test steps are in [CONTRIBUTION.md](CONTRIBUTION.md).
+Build, run, and test steps are in [CONTRIBUTING.md](CONTRIBUTING.md).
