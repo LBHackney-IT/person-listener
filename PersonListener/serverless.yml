@@ -1,7 +1,7 @@
 service: person-listener
 provider:
   name: aws
-  runtime: dotnet8
+  runtime: dotnet10
   memorySize: 2048
   tracing:
     lambda: true
@@ -11,7 +11,7 @@ provider:
   region: eu-west-2
 
 package:
-  artifact: ./bin/release/net8.0/person-listener.zip
+  artifact: ./bin/release/net10.0/person-listener.zip
 
 functions:
   PersonListener:
@@ -65,15 +65,6 @@ resources:
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
                           - 'log-group:/aws/lambda/*:*:*'
-                - Effect: "Allow"
-                  Action:
-                    - "s3:PutObject"
-                    - "s3:GetObject"
-                  Resource:
-                    Fn::Join:
-                      - ""
-                      - - "arn:aws:s3:::"
-                        - "Ref": "ServerlessDeploymentBucket"
           - PolicyName: lambdaInvocation
             PolicyDocument:
               Version: '2012-10-17'
